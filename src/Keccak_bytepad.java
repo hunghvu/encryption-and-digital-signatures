@@ -15,7 +15,7 @@ public class Keccak_bytepad {
         // Make sure the output byte string has length in bytes 
         // is a multiple of w
         int len = z.length + X.length;
-        while ((len / 8 % w) != 0) {
+        while ((len % w) != 0) {
            len += 1;
         }
         // Append the byte string to the encoded integer
