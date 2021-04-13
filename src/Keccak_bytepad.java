@@ -1,3 +1,4 @@
+import java.math.BigInteger;
 
 public class Keccak_bytepad {
    
@@ -8,13 +9,14 @@ public class Keccak_bytepad {
      * @return a byte array prepended by left_encode(w) such that it's length is a multiple of w
     */
     private static byte[] bytepad(byte[] X, int w) {
-        byte[] z = left_encode(w);
+    	
+        byte[] z = left_encode(BigInteger.valueOf(w));
         
         // Make sure the output byte string has length in bytes 
         // is a multiple of w
         int len = z.length + X.length;
         while ((len / 8 % w) != 0) {
-           len += 8;
+           len += 1;
         }
         // Append the byte string to the encoded integer
         byte[] out = Arrays.copyOf(z, len);
