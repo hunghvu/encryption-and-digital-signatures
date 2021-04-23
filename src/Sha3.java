@@ -66,24 +66,23 @@ public class Sha3 {
   private static final int[] keccakf_piln = { 10, 7, 11, 17, 18, 3, 5, 16, 8, 21, 24, 4, 15, 23, 19, 13, 12, 2, 20, 14,
       22, 9, 6, 1 };
 
-  void sha3_keccakf(long[/*25*/] st) {
+  void sha3_keccakf(long[/*25*/] v) {
     // variables
     int i, j, r;
     long t;
     long[] bc = new long[5];
 
-    #if __BYTE_ORDER__!=__ORDER_LITTLE_ENDIAN__
-      uint8_t*v;
 
-  // endianess conversion. this is redundant on little-endian targets
-  for(i=0;i<25;i++) {
-    v = (uint8_t *) &st[i];
-      st[i] = ((uint64_t) v[0]) | (((uint64_t) v[1]) << 8) |
-            (((uint64_t) v[2]) << 16) | (((uint64_t) v[3]) << 24) |
-            (((uint64_t) v[4]) << 32) | (((uint64_t) v[5]) << 40) |
-            (((uint64_t) v[6]) << 48) | (((uint64_t) v[7]) << 56);
+  // Map from byte[] to long[]
+  // j+=8 to go to next bunch of long
+  for(i = 0, j = 0; i < 25; i++, j += 8) {
+      // st[i], or q[i]?
+      st[i] = (((long) v[j + 0] & 0xFFL) << 0 ) | (((long) v[j + 1] & 0xFFL) << 8 ) |
+              (((long) v[j + 2] & 0xFFL) << 16) | (((long) v[j + 3] & 0xFFL) << 24) |
+              (((long) v[j + 4] & 0xFFL) << 32) | (((long) v[j + 5] & 0xFFL) << 40) |
+              (((long) v[j + 6] & 0xFFL) << 48) | (((long) v[j + 7] & 0xFFL) << 56);
   }
-    // #endif
+
 
   // actual iteration
   for(r=0;r<KECCAKF_ROUNDS;r++) {
@@ -127,21 +126,21 @@ public class Sha3 {
     st[0] ^= keccakf_rndc[r];
   }
 
-  #if __BYTE_ORDER__!=__ORDER_LITTLE_ENDIAN__
-  // endianess conversion. this is redundant on little-endian targets
-  for(i=0;i<25;i++)
-  {
-        v = (uint8_t *) &st[i];
+
+  // Map from long[] to byte[]
+  for(i = 0, j = 0; i < 25; i++, j += 8) {
+        // st or q?
         t = st[i];
-        v[0] = t & 0xFF;
-        v[1] = (t >> 8) & 0xFF;
-        v[2] = (t >> 16) & 0xFF;
-        v[3] = (t >> 24) & 0xFF;
-        v[4] = (t >> 32) & 0xFF;
-        v[5] = (t >> 40) & 0xFF;
-        v[6] = (t >> 48) & 0xFF;
-        v[7] = (t >> 56) & 0xFF;
-    }#endif
+        v[j + 0] = (byte) ((t >> 0) & 0xFF);
+        v[j + 1] = (byte) ((t >> 8) & 0xFF);
+        v[j + 2] = (byte) ((t >> 16) & 0xFF);
+        v[j + 3] = (byte) ((t >> 24) & 0xFF);
+        v[j + 4] = (byte) ((t >> 32) & 0xFF);
+        v[j + 5] = (byte) ((t >> 40) & 0xFF);
+        v[j + 6] = (byte) ((t >> 48) & 0xFF);
+        v[j + 7] = (byte) ((t >> 56) & 0xFF);
+    }
+
 }
 
 
