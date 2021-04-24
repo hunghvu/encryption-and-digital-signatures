@@ -23,6 +23,8 @@ public static int test_readhex(byte[] buf, final char[] str, int maxbytes)
     int i, h, l;
 
     for (i = 0; i < maxbytes; i++) {
+        if (str.length == 0 || 2 * i >= str.length) 
+            return i;
         h = test_hexdigit(str[2 * i]);
         if (h < 0)
             return i;
@@ -33,7 +35,7 @@ public static int test_readhex(byte[] buf, final char[] str, int maxbytes)
         buf[i] = (byte) ((h << 4) + l);
 
     }
-
+    
     return i;
 }
 
@@ -96,7 +98,7 @@ public static int test_sha3()
 
 
         if (!String.valueOf(sha).equals(String.valueOf(buf))) {
-            System.out.println("[%" + i + "] SHA3-" + sha_len * 8 +", len " + msg_len + " test FAILED.\n");
+            System.out.println("[" + i + "] SHA3-" + sha_len * 8 +", len " + msg_len + " test FAILED.\n");
             fails++;
         }
     }
@@ -160,7 +162,7 @@ public static int test_shake()
         if (!String.valueOf(buf).equals(String.valueOf(ref))){
           // bitwise &?
 
-            System.out.println("[%" + i + "] SHAKE" + ((i & 1)!=0 ? 256 : 128) +", len %" + (i >= 2 ? 1600 : 0) +" test FAILED.\n");
+            System.out.println("[" + i + "] SHAKE" + ((i & 1)!=0 ? 256 : 128) +", len %" + (i >= 2 ? 1600 : 0) +" test FAILED.\n");
 
             fails++;
         }
