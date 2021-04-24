@@ -4,23 +4,23 @@ import java.math.BigInteger;
 
 public class Encoder {
   // The main method is for testing only.
-  public static void main (String[]aStrings){
-    // Example bits: 0001 0000 | 0011 0001 | 0111 1110 (1 byte = 8 bits)
-    String decimal = "1061246";
-    byte[] resultLeft = left_encode(new BigInteger(decimal));
-    for (int i = 0; i < resultLeft.length; i ++) {
-      // Print byte as raw string: https://stackoverflow.com/questions/12310017/how-to-convert-a-byte-to-its-binary-string-representation
-      String s1 = String.format("%8s", Integer.toBinaryString(resultLeft[i] & 0xFF)).replace(' ', '0');
-      System.out.println("left_encode: " + s1);
-    }
-    System.out.println();
-    byte[] resultRight = right_encode(new BigInteger(decimal));
-    for (int i = 0; i < resultRight.length; i ++) {
-      // Print byte as raw string: https://stackoverflow.com/questions/12310017/how-to-convert-a-byte-to-its-binary-string-representation
-      String s1 = String.format("%8s", Integer.toBinaryString(resultRight[i] & 0xFF)).replace(' ', '0');
-      System.out.println("right_encode: " + s1);
-    }
-  }
+  // public static void main (String[]aStrings){
+  //   // Example bits: 0001 0000 | 0011 0001 | 0111 1110 (1 byte = 8 bits)
+  //   String decimal = "1061246";
+  //   byte[] resultLeft = left_encode(new BigInteger(decimal));
+  //   for (int i = 0; i < resultLeft.length; i ++) {
+  //     // Print byte as raw string: https://stackoverflow.com/questions/12310017/how-to-convert-a-byte-to-its-binary-string-representation
+  //     String s1 = String.format("%8s", Integer.toBinaryString(resultLeft[i] & 0xFF)).replace(' ', '0');
+  //     System.out.println("left_encode: " + s1);
+  //   }
+  //   System.out.println();
+  //   byte[] resultRight = right_encode(new BigInteger(decimal));
+  //   for (int i = 0; i < resultRight.length; i ++) {
+  //     // Print byte as raw string: https://stackoverflow.com/questions/12310017/how-to-convert-a-byte-to-its-binary-string-representation
+  //     String s1 = String.format("%8s", Integer.toBinaryString(resultRight[i] & 0xFF)).replace(' ', '0');
+  //     System.out.println("right_encode: " + s1);
+  //   }
+  // }
 
   /**
    * left_encode(x) encodes the integer x as a byte string in a way that can be unambiguously parsed
@@ -35,7 +35,8 @@ public class Encoder {
    * 
    * @param x an arbitrary large integer with validity Conditions: 0 <= x < 2^2040
    */
-  private static byte[] left_encode(BigInteger x){
+  private static byte[] left_encode(int c){
+    BigInteger x = BigInteger.valueOf(c);
     // 1. Let n be the smallest positive integer for which 2^8n > x
     int n = (int) Math.ceil(Double.valueOf(x.bitLength()) / 8);
     // 2. Let x_1, x_2,…, x_n be the base-256 encoding of x satisfying:
@@ -73,7 +74,8 @@ public class Encoder {
    * 
    * @param x an arbitrary large integer with validity Conditions: 0 <= x < 2^2040
    */
-  private static byte[] right_encode(BigInteger x){
+  private static byte[] right_encode(int c){
+    BigInteger x = BigInteger.valueOf(c);
     // 1. Let n be the smallest positive integer for which 2^8n > x
     int n = (int) Math.ceil(Double.valueOf(x.bitLength()) / 8);
     // 2. Let x_1, x_2,…, x_n be the base-256 encoding of x satisfying:
