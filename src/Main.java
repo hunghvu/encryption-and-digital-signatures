@@ -5,6 +5,7 @@ public class Main {
   public static void main (String args[]) {
     if (test_sha3() == 0 && test_shake() == 0)
       System.out.println("FIPS 202 / SHA3, SHAKE128, SHAKE256 Self-Tests OK!\n");
+
   }
 
   public static int test_hexdigit(char ch) {
@@ -17,7 +18,7 @@ public class Main {
     return -1;
   }
 
-public static int test_readhex(char[] buf, final char[] str, int maxbytes)
+public static int test_readhex(byte[] buf, final char[] str, int maxbytes)
 {
     int i, h, l;
 
@@ -28,7 +29,9 @@ public static int test_readhex(char[] buf, final char[] str, int maxbytes)
         l = test_hexdigit(str[2 * i + 1]);
         if (l < 0)
             return i;
-        buf[i] = (char) ((h << 4) + l);
+
+        buf[i] = (byte) ((h << 4) + l);
+
     }
 
     return i;
@@ -74,20 +77,23 @@ public static int test_sha3()
     };
 
     int i, fails, msg_len, sha_len;
-    char [] sha/** 64 */, buf/** 64 */, msg/** 256 */;
+
+    byte [] sha = new byte[64];
+    byte [] buf = new byte[64];
+    byte [] msg = new byte[256];
+    Sha3 sha3 = new Sha3();
 
     fails = 0;
     for (i = 0; i < 4; i++) {
-        
-        sha = new char[64]; //default \0?
-        buf = new char[64];
-        msg = new char[256];
 
         // size = 1 byte * arr length
         msg_len = test_readhex(msg, testvec[i][0].toCharArray(), 256);
         sha_len = test_readhex(sha, testvec[i][1].toCharArray(), 64);
 
-        sha3(msg, msg_len, buf, sha_len); // Where?
+
+        sha3.Keccak(msg, msg_len, sha_len); // Where?
+
+
 
         if (!String.valueOf(sha).equals(String.valueOf(buf))) {
             System.out.println("[%" + i + "] SHA3-" + sha_len * 8 +", len " + msg_len + " test FAILED.\n");
@@ -118,7 +124,10 @@ public static int test_shake()
     int i, j, fails;
     // sha3_ctx_t sha3;
     Sha3 sha3 = new Sha3();
-    char[] buf /**32 */, ref /**32 */;
+
+    byte[] buf = new byte[32]; 
+    byte[] ref = new byte[32];
+
 
     fails = 0;
 
@@ -132,7 +141,9 @@ public static int test_shake()
 
         if (i >= 2) {                   // 1600-bit test pattern
             for (int k = 0; k < 20; k++) {
-              buf[k] = (char) 0xA3;
+
+              buf[k] = (byte) 0xA3;
+
             }
             for (j = 0; j < 200; j += 20)
                 // shake_update(&sha3, buf, 20); to sha3_update?
@@ -148,7 +159,9 @@ public static int test_shake()
         test_readhex(ref, testhex[i].toCharArray(), 32);
         if (!String.valueOf(buf).equals(String.valueOf(ref))){
           // bitwise &?
-            System.out.println("[%" + i + "] SHAKE" + (i & 1 ? 256 : 128) +", len %" + i >= 2 ? 1600 : 0 +" test FAILED.\n");
+
+            System.out.println("[%" + i + "] SHAKE" + ((i & 1)!=0 ? 256 : 128) +", len %" + (i >= 2 ? 1600 : 0) +" test FAILED.\n");
+
             fails++;
         }
     }
@@ -157,4 +170,6 @@ public static int test_shake()
 }
 
 
+
 }
+
