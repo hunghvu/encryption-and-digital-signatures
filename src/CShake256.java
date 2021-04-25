@@ -6,6 +6,7 @@
 //        if (N.length == 0 && S.length == 0) {
 //            return SHAKE256(X, L);
 //        } else {
+//            ADD
 //            byte[] val = bytepad(concat(encode_string(N), encode_string(S)), 136);
 //            update(val, val.length);
 //        }
