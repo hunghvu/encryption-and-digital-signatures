@@ -1,13 +1,17 @@
-import java.nio.charset.StandardCharsets;
+/**
+ * Test code for Sha3.java, adapted from version created by: 
+ * Markku-Juhani O. Saarinen <mjos@iki.fi> - https://github.com/mjosaarinen/tiny_sha3
+ * Paulo Barreto - Code preseted during office hour
+ */
 import java.util.*;
 
 public class Main {
-	
-	static byte[] sha;
-    static byte[] buf;
-    static byte[] msg;
-    static byte[] ref;
-	
+
+  static byte[] sha;
+  static byte[] buf;
+  static byte[] msg;
+  static byte[] ref;
+
   // We will decompose the project, and bring them into their respective folder
   // later on (modularize).
   public static void main(String args[]) {
@@ -77,21 +81,21 @@ public class Main {
 
     int i, fails, msg_len, sha_len;
 
-    Sha3 sha3 = new Sha3();
+    SHA3 sha3 = new SHA3();
 
     fails = 0;
     for (i = 0; i < 4; i++) {
-		sha = new byte[64];
-	    msg = new byte[256];
-	    buf = new byte[64];
+      sha = new byte[64];
+      msg = new byte[256];
+      buf = new byte[64];
 
       // size = 1 byte * arr length
       msg_len = test_readhex(msg, testvec[i][0].toCharArray(), 256);
       sha_len = test_readhex(sha, testvec[i][1].toCharArray(), 64);
 
-      sha3.Keccak(msg, msg_len, buf, sha_len); 
+      sha3.Keccak(msg, msg_len, buf, sha_len);
 
-      if (!Arrays.equals(sha,buf)) {
+      if (!Arrays.equals(sha, buf)) {
         System.out.println("[" + i + "] SHA3-" + sha_len * 8 + ", len " + msg_len + " test FAILED.\n");
         fails++;
       }
@@ -117,14 +121,13 @@ public class Main {
 
     int i, j, fails;
     // sha3_ctx_t sha3;
-    Sha3 sha3 = new Sha3();
+    SHA3 sha3 = new SHA3();
     buf = new byte[32];
     ref = new byte[32];
 
     fails = 0;
 
     for (i = 0; i < 4; i++) {
-    	
 
       if ((i & 1) == 0) { // test each twice
         sha3.shake128_init();
@@ -150,7 +153,7 @@ public class Main {
 
       // compare to reference
       test_readhex(ref, testhex[i].toCharArray(), 32);
-      if (!Arrays.equals(ref,buf)) {
+      if (!Arrays.equals(ref, buf)) {
         // bitwise &?
 
         System.out.println(
