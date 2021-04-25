@@ -50,8 +50,7 @@ public class Sha3 {
   // Map from byte[] to long[]
   // j+=8 to go to next bunch of long
   for(int i = 0, j = 0; i < 25; i++, j += 8) {
-      // st[i], or q[i]?
-      q[i] = (((long) v[j + 0] & 0xFFL) << 0 ) | (((long) v[j + 1] & 0xFFL) << 8 ) |
+      q[i] = (((long) v[j + 0] & 0xFFL)  ) | (((long) v[j + 1] & 0xFFL) << 8 ) |
               (((long) v[j + 2] & 0xFFL) << 16) | (((long) v[j + 3] & 0xFFL) << 24) |
               (((long) v[j + 4] & 0xFFL) << 32) | (((long) v[j + 5] & 0xFFL) << 40) |
               (((long) v[j + 6] & 0xFFL) << 48) | (((long) v[j + 7] & 0xFFL) << 56);
@@ -62,19 +61,19 @@ public class Sha3 {
   for(int r=0; r<KECCAKF_ROUNDS; r++) {
     // Theta
     for (int i = 0; i < 5; i++)
-      bc[i] = st[i] ^ st[i + 5] ^ st[i + 10] ^ st[i + 15] ^ st[i + 20];
+      bc[i] = q[i] ^ q[i + 5] ^ q[i + 10] ^ q[i + 15] ^ q[i + 20];
 
     for (int i = 0; i < 5; i++) {
       t = bc[(i + 4) % 5] ^ ROTL64(bc[(i + 1) % 5], 1);
       for (int j = 0; j < 25; j += 5)
-          st[j + i] ^= t;
+          q[j + i] ^= t;
     }
 
     // Rho Pi
-    t = st[1];
+    t = q[1];
     for (int i = 0; i < 24; i++) {
       int j = keccakf_piln[i];
-      bc[0] = st[j];
+      bc[0] = q[j];
       q[j] = ROTL64(t, keccakf_rotc[i]);
       t = bc[0];
     }
@@ -96,7 +95,7 @@ public class Sha3 {
   // Map from long[] to byte[]
   for(int i = 0, j = 0; i < 25; i++, j += 8) {
         // st or q?
-        t = st[i];
+        t = q[i];
         v[j + 0] = (byte) ((t >> 0) & 0xFF);
         v[j + 1] = (byte) ((t >> 8) & 0xFF);
         v[j + 2] = (byte) ((t >> 16) & 0xFF);
@@ -116,8 +115,7 @@ public class Sha3 {
    * @param _mdlen hash output in bytes
    */
    void sha3_init(int _mdlen) {
-      for (int i = 0; i < 200; i++)
-         st[i] = (byte)0;
+      st = new byte[200];
       mdlen = _mdlen;
       rsiz = 200 - 2*mdlen;
       pt = 0;
@@ -162,15 +160,13 @@ public class Sha3 {
    * Adapted from https://github.com/mjosaarinen/tiny_sha3/blob/master/sha3.c
    * @md SHA-3 hash
    */
-   byte[] sha3_final(byte[] md) {
+   void sha3_final(byte[] md) {
       st[pt] ^= 0x06;
       st[rsiz - 1] ^= 0x80;
       sha3_keccakf(st);
       
       for (int i = 0; i < mdlen; i++)
          md[i] = st[i];
-      
-      return md;
    }
    
    /**
@@ -180,10 +176,10 @@ public class Sha3 {
     * @param inlen given byte length
     * @param mdlen hash output in bytes
     */
-    byte[] Keccak(byte[] in, int inlen, int mdlen) {
+    void Keccak(byte[] in, int inlen, byte[] md, int mdlen) {
     	sha3_init(mdlen);
     	sha3_update(in, inlen);
-    	return sha3_final(new byte[64]);
+    	sha3_final(md);
     }
     
     public void shake_xof() {
