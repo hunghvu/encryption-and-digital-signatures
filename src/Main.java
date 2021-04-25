@@ -2,6 +2,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class Main {
+	
+	static byte[] sha;
+    static byte[] buf;
+    static byte[] msg;
+    static byte[] ref;
+	
   // We will decompose the project, and bring them into their respective folder
   // later on (modularize).
   public static void main(String args[]) {
@@ -24,7 +30,7 @@ public class Main {
     int i, h, l;
 
     for (i = 0; i < maxbytes; i++) {
-      if (str.length == 0 || 2 * i >= str.length)
+      if (2 * i >= str.length)
         return i;
       h = test_hexdigit(str[2 * i]);
       if (h < 0)
@@ -71,21 +77,21 @@ public class Main {
 
     int i, fails, msg_len, sha_len;
 
-    byte[] sha = new byte[64];
-    byte[] buf = new byte[64];
-    byte[] msg = new byte[256];
     Sha3 sha3 = new Sha3();
 
     fails = 0;
     for (i = 0; i < 4; i++) {
+		sha = new byte[64];
+	    msg = new byte[256];
+	    buf = new byte[64];
 
       // size = 1 byte * arr length
       msg_len = test_readhex(msg, testvec[i][0].toCharArray(), 256);
       sha_len = test_readhex(sha, testvec[i][1].toCharArray(), 64);
 
-      sha3.Keccak(msg, msg_len, sha_len); // Where?
+      sha3.Keccak(msg, msg_len, buf, sha_len); 
 
-      if (!String.valueOf(sha).equals(String.valueOf(buf))) {
+      if (!Arrays.equals(sha,buf)) {
         System.out.println("[" + i + "] SHA3-" + sha_len * 8 + ", len " + msg_len + " test FAILED.\n");
         fails++;
       }
@@ -112,13 +118,13 @@ public class Main {
     int i, j, fails;
     // sha3_ctx_t sha3;
     Sha3 sha3 = new Sha3();
-
-    byte[] buf = new byte[32];
-    byte[] ref = new byte[32];
+    buf = new byte[32];
+    ref = new byte[32];
 
     fails = 0;
 
     for (i = 0; i < 4; i++) {
+    	
 
       if ((i & 1) == 0) { // test each twice
         sha3.shake128_init();
@@ -134,17 +140,17 @@ public class Main {
         }
         for (j = 0; j < 200; j += 20)
           // shake_update(&sha3, buf, 20); to sha3_update?
-          sha3.sha3_update(new String(buf).getBytes(StandardCharsets.UTF_8), 20);
+          sha3.sha3_update(buf, 20);
       }
 
       sha3.shake_xof(); // switch to extensible output
 
       for (j = 0; j < 512; j += 32) // output. discard bytes 0..479
-        sha3.shake_out(new String(buf).getBytes(StandardCharsets.UTF_8), 32);
+        sha3.shake_out(buf, 32);
 
       // compare to reference
       test_readhex(ref, testhex[i].toCharArray(), 32);
-      if (!String.valueOf(buf).equals(String.valueOf(ref))) {
+      if (!Arrays.equals(ref,buf)) {
         // bitwise &?
 
         System.out.println(
