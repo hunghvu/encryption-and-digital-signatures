@@ -1,17 +1,23 @@
-import java.nio.charset.StandardCharsets;
+
+/**
+ * Test code for Sha3.java, adapted from version created by: 
+ * Markku-Juhani O. Saarinen <mjos@iki.fi> - https://github.com/mjosaarinen/tiny_sha3
+ * Paulo Barreto - Code preseted during office hour
+ */
 import java.util.*;
 
 public class Main {
-	
-	static byte[] sha;
-    static byte[] buf;
-    static byte[] msg;
-    static byte[] ref;
-	
+
+  static byte[] sha;
+  static byte[] buf;
+  static byte[] msg;
+  static byte[] ref;
+
   // We will decompose the project, and bring them into their respective folder
   // later on (modularize).
   public static void main(String args[]) {
-    if (test_sha3() == 0 && test_shake() == 0)
+    
+    if (test_sha3() == 0 && test_shake() == 0 && test_cshake256() == 0)
       System.out.println("FIPS 202 / SHA3, SHAKE128, SHAKE256 Self-Tests OK!\n");
 
   }
@@ -77,21 +83,21 @@ public class Main {
 
     int i, fails, msg_len, sha_len;
 
-    Sha3 sha3 = new Sha3();
+    SHA3 sha3 = new SHA3();
 
     fails = 0;
     for (i = 0; i < 4; i++) {
-		sha = new byte[64];
-	    msg = new byte[256];
-	    buf = new byte[64];
+      sha = new byte[64];
+      msg = new byte[256];
+      buf = new byte[64];
 
       // size = 1 byte * arr length
       msg_len = test_readhex(msg, testvec[i][0].toCharArray(), 256);
       sha_len = test_readhex(sha, testvec[i][1].toCharArray(), 64);
 
-      sha3.Keccak(msg, msg_len, buf, sha_len); 
+      sha3.Keccak(msg, msg_len, buf, sha_len);
 
-      if (!Arrays.equals(sha,buf)) {
+      if (!Arrays.equals(sha, buf)) {
         System.out.println("[" + i + "] SHA3-" + sha_len * 8 + ", len " + msg_len + " test FAILED.\n");
         fails++;
       }
@@ -117,14 +123,13 @@ public class Main {
 
     int i, j, fails;
     // sha3_ctx_t sha3;
-    Sha3 sha3 = new Sha3();
+    SHA3 sha3 = new SHA3();
     buf = new byte[32];
     ref = new byte[32];
 
     fails = 0;
 
     for (i = 0; i < 4; i++) {
-    	
 
       if ((i & 1) == 0) { // test each twice
         sha3.shake128_init();
@@ -150,12 +155,59 @@ public class Main {
 
       // compare to reference
       test_readhex(ref, testhex[i].toCharArray(), 32);
-      if (!Arrays.equals(ref,buf)) {
+      if (!Arrays.equals(ref, buf)) {
         // bitwise &?
 
         System.out.println(
-            "[" + i + "] SHAKE" + ((i & 1) != 0 ? 256 : 128) + ", len %" + (i >= 2 ? 1600 : 0) + " test FAILED.\n");
+            "[" + i + "] SHAKE" + ((i & 1) != 0 ? 256 : 128) + ", len " + (i >= 2 ? 1600 : 0) + " test FAILED.\n");
 
+        fails++;
+      }
+    }
+
+    return fails;
+  }
+
+  // Test cSHAKE256
+  public static int test_cshake256() {
+    // Test vectors from
+    // https://csrc.nist.gov/CSRC/media/Projects/Cryptographic-Standards-and-Guidelines/documents/examples/cSHAKE_samples.pdf
+    int fails = 0;
+    final String testvec[][] = { { // Test sample #3
+            "00010203", // Data X
+            "4", // Length L - 32 bits = 4 bytes, hard-coded msg_len
+            "", // N - empty
+            "Email Signature", // S - character string
+            "D008828E2B80AC9D2218FFEE1D070C48B8E4C87BFF32C9699D5B6896EEE0EDD164020E2BE0560858D9C00C037E34A96937C561A74C412BB4C746469527281C8C" // Output
+        }, { // Test sample #4
+            "000102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F202122232425262728292A2B2C2D2E2F303"
+                + "132333435363738393A3B3C3D3E3F404142434445464748494A4B4C4D4E4F505152535455565758595A5B5C5D5E5F606162"
+                + "636465666768696A6B6C6D6E6F707172737475767778797A7B7C7D7E7F808182838485868788898A8B8C8D8E8F909192939"
+                + "495969798999A9B9C9D9E9FA0A1A2A3A4A5A6A7A8A9AAABACADAEAFB0B1B2B3B4B5B6B7B8B9BABBBCBDBEBFC0C1C2C3C4C5C6C7", // Data X
+            "200", // Length L - 1600 bits = 200 bytes, hard-coded msg_len
+            "", // N -empty
+            "Email Signature", // S - character string
+            "07DC27B11E51FBAC75BC7B3C1D983E8B4B85FB1DEFAF218912AC86430273091727F42B17ED1DF63E8EC118F04B23633C1DFB1574C8FB55CB45DA8E25AFB092BB" // Output
+        } };
+    
+    SHA3 sha3 = new SHA3();
+
+    for (int i = 0; i < 2; i++) {
+      buf = new byte [Integer.valueOf(testvec[i][1]).intValue()];
+      ref = new byte [32]; // 256 bits output = 32 bytes
+
+      test_readhex(buf, testvec[i][0].toCharArray(), Integer.valueOf(testvec[i][1]).intValue()); // input
+      test_readhex(ref, testvec[i][4].toCharArray(), 32); // output
+
+      byte[] outval = sha3.cshake256_out(
+        buf, // X
+        Integer.valueOf(testvec[i][1]).intValue(), // L
+        testvec[i][2], // N
+        testvec[i][4]); // S
+      
+      if (!Arrays.equals(ref, buf)) {
+        System.out.println(
+            "[" + i + "] cSHAKE256, len " + (i == 1 ? 1600 : 32) + " test FAILED.\n");
         fails++;
       }
     }
