@@ -7,7 +7,7 @@
 //            return SHAKE256(X, L);
 //        } else {
 //            ADD
-//            byte[] val = bytepad(concat(encode_string(N), encode_string(S)), 136);
+//            byte[] val = bytepad(concatByteArrays(encode_string(N), encode_string(S)), 136);
 //            update(val, val.length);
 //        }
 //        return val;
