@@ -12,13 +12,14 @@ public class Main {
   static byte[] buf;
   static byte[] msg;
   static byte[] ref;
+  static byte[] key;
 
   // We will decompose the project, and bring them into their respective folder
   // later on (modularize).
   public static void main(String args[]) {
     
-    if (test_sha3() == 0 && test_shake() == 0 && test_cshake256() == 0)
-      System.out.println("FIPS 202 / SHA3, SHAKE128, SHAKE256, cSHAKE256 Self-Tests OK!\n");
+    if (test_sha3() == 0 && test_shake() == 0 && test_cshake256() == 0 && test_kmacxof256() == 0)
+      System.out.println("FIPS 202 / SHA3, SHAKE128, SHAKE256, cSHAKE256, KMACXOF256 Self-Tests OK!\n");
 
   }
 
@@ -206,7 +207,7 @@ public class Main {
         buf, // X
         Integer.valueOf(testvec[i][1]).intValue(), // L
         testvec[i][2], // N
-        testvec[i][4]); // S
+        testvec[i][3]); // S
       
       if (!Arrays.equals(ref, buf)) {
         System.out.println(
@@ -253,26 +254,30 @@ public class Main {
         + "7D7E7F808182838485868788898A8B8C8D8E8F909192939495969798999A9B"
         + "9C9D9E9FA0A1A2A3A4A5A6A7A8A9AAABACADAEAFB0B1B2B3B4B5B6B7B8B9BABBBCBDBEBFC0C1C2C3C4C5C6C7", // X - Data
         "200", // L - Length, 1600 bits = 200 bytes (hard-coded)
-        "My Tagged Application" // S - Character string
+        "My Tagged Application", // S - Character string
+        "D5BE731C954ED7732846BB59DBE3A8E30F83E77A4BFF4459F2F1C2B4ECEBB8CE67BA01C62E8AB8578D2D499BD1BB276768781190020A306A97DE281DCC30305D" // Outval
       }, 
     };
 
     SHA3 sha3 = new SHA3();
 
-    for (int i = 0; i < 2; i++) {
-      buf = new byte[Integer.valueOf(testvec[i][1]).intValue()];
-      ref = new byte[32]; // 256 bits output = 32 bytes
+    for (int i = 0; i < 3; i++) {
+      buf = new byte[Integer.valueOf(testvec[i][2]).intValue()];
+      ref = new byte[64]; // 512 bits output = 64 bytes
+      key = new byte[32]; // 256 bits key = 32 bytes
 
-      test_readhex(buf, testvec[i][0].toCharArray(), Integer.valueOf(testvec[i][1]).intValue()); // input
-      test_readhex(ref, testvec[i][4].toCharArray(), 32); // output
+      test_readhex(buf, testvec[i][1].toCharArray(), Integer.valueOf(testvec[i][2]).intValue()); // input
+      test_readhex(ref, testvec[i][4].toCharArray(), 64); // output
+      test_readhex(key, testvec[i][0].toCharArray(), 32); // key
 
-      byte[] outval = sha3.cshake256_out(buf, // X
-          Integer.valueOf(testvec[i][1]).intValue(), // L
-          testvec[i][2], // N
-          testvec[i][4]); // S
+      byte[] outval = sha3.kmacxof256_out(
+        key, // K
+        buf, // X
+        testvec[i][2], // L
+        testvec[i][3]); // S
 
       if (!Arrays.equals(ref, buf)) {
-        System.out.println("[" + i + "] cSHAKE256, len " + (i == 1 ? 1600 : 32) + " test FAILED.\n");
+        System.out.println("[" + i + "] KMACXOF256, len " + (i >= 1 ? 1600 : 32) + " test FAILED.\n");
         fails++;
       }
     }
