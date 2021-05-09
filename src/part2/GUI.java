@@ -24,32 +24,44 @@ public class GUI {
         final JFrame frame = new JFrame();
         final JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
-        final JButton buttonBrowse = new JButton("SHA3 - file");
+        final JButton buttonBrowseSha3 = new JButton("SHA3 - file");
 
         final JLabel labelInput = new JLabel("Enter text to get SHA3 below");
         final JTextArea textInput = new JTextArea();
         final JButton buttonTextInput = new JButton("SHA3 - text input");
+
+        final JButton buttonBrowseMac = new JButton("MAC - file");
+        final JLabel labelMac = new JLabel("Enter MAC passphrase below (the default is an empty passphrase)");
+        final JTextArea textMacPassphrase = new JTextArea();
+
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {
             System.out.println(e);
         } 
-        // buttonBrowse.setBounds(100,25,125,75);
-        // textInput.setBounds(100,110,125,75);
-        // buttonTextInput.setBounds(100,130,125,75);
-        buttonBrowse.addActionListener(event -> {
+
+        buttonBrowseSha3.addActionListener(event -> {
             final File directory = actionBrowse();
             // System.out.println(directory.getAbsolutePath());
             System.out.println("SHA3 of your file is: " + get_sha3_file(directory));
         });
         buttonTextInput.addActionListener(event -> {
-            String m = textInput.getText();
+            final String m = textInput.getText();
             System.out.println("SHA3 of your text input is: " + get_sha3_text(m));
         });
-        panel.add(buttonBrowse);
+        buttonBrowseMac.addActionListener(event -> {
+            final File directory = actionBrowse();
+            String passphrase = textMacPassphrase.getText();
+            System.out.println("MAC of your file is: " + get_mac_file(directory, passphrase));
+
+        });
+        panel.add(buttonBrowseSha3);
         panel.add(labelInput);
         panel.add(textInput);
         panel.add(buttonTextInput);
+        panel.add(labelMac);
+        panel.add(textMacPassphrase);
+        panel.add(buttonBrowseMac);
         panel.setVisible(true);
         frame.setSize(600, 600);
         frame.setVisible(true);
@@ -71,10 +83,11 @@ public class GUI {
         return directory;
     }
 
-    private static String get_sha3_file(File theDirectory) {
+    // Return SHA3 in hex string of a file
+    private static String get_sha3_file(File directory) {
         StringBuilder sb = new StringBuilder();
         try {
-            byte[] data = Files.readAllBytes(theDirectory.toPath());
+            byte[] data = Files.readAllBytes(directory.toPath());
             int length  = 512;
             String s = "D";
             // Must use "".getBbytes(), not an empty key byte array.
@@ -87,6 +100,7 @@ public class GUI {
         return sb.toString();
     }
 
+    // Return SHA3 in hex string of a given text input
     private static String get_sha3_text(String m) {
         byte[] data = m.getBytes();
         int length = 512;
@@ -95,6 +109,22 @@ public class GUI {
         return bytesToHex(outval);
     }
 
+    // Return MAC of a given file in hex string
+    private static String get_mac_file(File directory, String passphrase) {
+        StringBuilder sb = new StringBuilder();
+        try {
+            byte[] data = Files.readAllBytes(directory.toPath());
+            int length  = 512;
+            String s = "T";
+            // Must use "".getBbytes(), not an empty key byte array.
+            byte[] outval = SHA3.KMACXOF256(passphrase.getBytes(), data, length, s);
+            sb.append(bytesToHex(outval));
+
+        } catch (IOException e) {
+            System.out.println ("get_sha3_file IOException");
+        }
+        return sb.toString();
+    }
     // https://stackoverflow.com/questions/9655181/how-to-convert-a-byte-array-to-a-hex-string-in-java
     private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
         public static String bytesToHex(byte[] bytes) {
