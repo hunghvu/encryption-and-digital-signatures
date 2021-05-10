@@ -1,3 +1,4 @@
+package kmac;
 //import java.awt.*;
 //import java.io.ByteArrayOutputStream;
 //import java.io.FileOutputStream;
@@ -48,10 +49,10 @@
 //        rand.nextBytes(z);
 //
 //
-//        //(ke || ka) <-- KMACXOF256(z || pw, “”, 1024, “S”)
+//        //(ke || ka) <-- KMACXOF256(z || pw, “�?, 1024, “S�?)
 //        byte[] keka = SHAKE.KMACXOF256(concatenateByteArray(z, pw), "".getBytes(), 1024, "S".getBytes());
 //
-//        //c <-- KMACXOF256(ke, “”, |m|, “SKE”) XOR m
+//        //c <-- KMACXOF256(ke, “�?, |m|, “SKE�?) XOR m
 //        byte[] ke = Arrays.copyOfRange(keka, 0, 64);
 //        byte[] intermediateResult = SHAKE.KMACXOF256(ke, "".getBytes(), 8 * message.length, "SKE".getBytes());
 //        byte[] c = new byte[message.length];
@@ -59,7 +60,7 @@
 //            c[i] = (byte) (intermediateResult[i] ^ message[i]);
 //        }
 //
-//        // t <-- KMACXOF256(ka, m, 512, “SKA”)
+//        // t <-- KMACXOF256(ka, m, 512, “SKA�?)
 //        byte[] ka = Arrays.copyOfRange(keka, 64, 128);
 //        byte[] t = SHAKE.KMACXOF256(ka, message, 512, "SKA".getBytes());
 //
