@@ -20,7 +20,6 @@ public class Main {
     
     if (test_sha3() == 0 && test_shake() == 0 && test_cshake256() == 0 && test_kmacxof256() == 0)
       System.out.println("FIPS 202 / SHA3, SHAKE128, SHAKE256, cSHAKE256, KMACXOF256 Self-Tests OK!\n");
-
   }
 
   public static int test_hexdigit(char ch) {
@@ -274,8 +273,6 @@ public class Main {
         fails++;
       }
     }
-
     return fails;
   }
-
 }
