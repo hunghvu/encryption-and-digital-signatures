@@ -1,5 +1,10 @@
+package kmac;
+
 import java.math.BigInteger;
+
 import java.util.Arrays;
+
+import util.UtilMethods;
 
 /**
  * SHA3 implementation, adapted from version created by: 
@@ -237,7 +242,7 @@ public class SHA3 {
   void cShake256_init(String N, String S) {
 	shake256_init();
 	if (!N.equals("") || !S.equals("")) {
-		byte[] prefix = bytepad(concat(encode_string(N.getBytes()), encode_string(S.getBytes())), 136);
+		byte[] prefix = bytepad(UtilMethods.concat(encode_string(N.getBytes()), encode_string(S.getBytes())), 136);
 		sha3_update(prefix, prefix.length);
 	}
   }
@@ -318,20 +323,7 @@ public class SHA3 {
   
   /************************************************************
    *                    Auxiliary Methods                     *
-   ************************************************************/
-  /**
-   * Concatenation function for 2 byte arrays. Assist from https://stackoverflow.com/questions/5513152/easy-way-to-concatenate-two-byte-arrays
-   * @param a Byte Array a
-   * @param b Byte Array b
-   * @return A concatenation of a and b as c.
-   */
-  private static byte[] concat(byte[] a, byte[]b) {
-	  byte[] c = new byte[a.length + b.length];
-	  System.arraycopy(a, 0, c, 0, a.length);
-	  System.arraycopy(b, 0, c, a.length, b.length);
-	  return c;
-  }
-  
+   ************************************************************/ 
   private static byte[] encode_string(byte[] S) {
 	  // Validity Conditions: 0 ≤ len(S) < 2^2040
 	  int slen = (S != null) ? S.length : 0;

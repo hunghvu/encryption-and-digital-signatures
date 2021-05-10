@@ -1,3 +1,4 @@
+package gui;
 // A simple GUI to retrieve a File
 import java.awt.Color;
 import java.io.File;

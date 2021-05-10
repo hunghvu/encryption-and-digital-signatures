@@ -1,3 +1,5 @@
+package kmac;
+
 
 /**
  * Test code for Sha3.java, adapted from version created by: 
