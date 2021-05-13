@@ -1,5 +1,13 @@
 package kmac;
 
+import java.awt.*;
+import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.security.SecureRandom;
 import java.util.Arrays;
 
 import util.DecryptionData;
@@ -7,7 +15,52 @@ import util.UtilMethods;
 
 
 public class KCrypt {
-	
+
+	static void encryptFile(String inFile, String pass, String outfile) throws IOException {
+
+		// Read bytes from a file
+		byte[] enc = UtilMethods.readFileBytes(inFile);
+
+		// Convert passphrase to byte array
+		byte[] pw = (pass != null && pass.length() > 0) ? pass.getBytes() : new byte[0];
+
+		try {
+			FileOutputStream outputStream = new FileOutputStream(outfile + ".cryptogram");
+			outputStream.write(encrypt(enc, pw));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		System.out.println("Your file has been encrypted! Your file has been encrypted to " + UtilMethods.bytesToHex(enc));
+	}
+
+	private static byte[] encrypt(byte[] message, byte[] pwd) throws IOException {
+         // z <-- Random(512)
+        SecureRandom rand = new SecureRandom();
+        byte[] z = new byte[64]; //64 * 8 = 512
+        rand.nextBytes(z);
+
+
+		// (ke || ka) = KMACXOF256(z || pw, “”, 1024, “S”)
+        byte[] ke_ka = SHA3.KMACXOF256(UtilMethods.concat(z, pwd), new byte[]{}, 1024, "S");
+
+        byte[] ke = Arrays.copyOfRange(ke_ka, 0, 64);
+        // c = KMACXOF256(ke, “”, |m|, “SKE”) XOR m
+		byte[] c = UtilMethods.xorBytes(SHA3.KMACXOF256(ke, new byte[]{}, 8* message.length, "SKE"), message);
+
+
+        byte[] ka = Arrays.copyOfRange(ke_ka, 64, 128);
+        // t = KMACXOF256(ka, m, 512, "SKA)
+		byte[] t = SHA3.KMACXOF256(ka, message, 512, "SKA");
+
+        //symmetric cryptogram: (z, c, t)
+        ByteArrayOutputStream symCryptogram = new ByteArrayOutputStream();
+        symCryptogram.write(z);
+        symCryptogram.write(c);
+        symCryptogram.write(t);
+        return symCryptogram.toByteArray();
+    }
+
+
 	/**
 	 * Decrypt a file with a passphrase.
 	 * @param inFile input file url
