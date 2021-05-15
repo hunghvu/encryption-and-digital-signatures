@@ -1,6 +1,4 @@
-package gui;
-
-// A simple GUI to retrieve a File
+package gui;// A simple GUI to retrieve a File
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
