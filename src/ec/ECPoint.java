@@ -6,12 +6,14 @@ public class ECPoint {
 	
 	/** The quantity d in the equation of E_521. */
     private static final BigInteger D = BigInteger.valueOf(-376014);
-    
+    private static BigInteger x;
+    private static BigInteger y;
+
     /** x coordinate. */
-    private BigInteger x;
+    //private BigInteger x;
     
     /** y coordinate. */
-    private BigInteger y;
+    //private BigInteger y;
     
 	/** Mersenne prime. */
 	private static final BigInteger P = BigInteger.valueOf(2).pow(521).subtract(BigInteger.ONE);
@@ -24,8 +26,9 @@ public class ECPoint {
      * that number is n = 4r.
      */
     public static final BigInteger R = BigInteger.valueOf(2L).pow(519).subtract(new BigInteger(RSUB));
-    
-    
+
+
+
     /**
      * Initializes a point on the E_521 curve with given x and y.
      * @param x the x coordinate of the point
@@ -37,7 +40,27 @@ public class ECPoint {
         this.y = y;
     }
 
-    
+
+    /**
+     * Given any two points on (x1,y1) and (x2,y2) on the curve, their sum point is demonstrated by the
+     * method below, this is called the Edwards point addition formula.
+     * @param other the other x and y point.
+     * @return A new ECPoint that is the combination of (x1,y1) and (x2,y2).
+     */
+    private static ECPoint summation(ECPoint other) {
+        BigInteger xNum = x.multiply(other.y).add(y.multiply(other.x));
+        BigInteger yNum = y.multiply(other.y).subtract(x.multiply(other.x));
+        BigInteger rightDem = D.multiply(x).multiply(other.x).multiply(y).multiply(other.y);
+        BigInteger xDem = BigInteger.ONE.add(rightDem);
+        BigInteger yDem = BigInteger.ONE.subtract(rightDem);
+        BigInteger myX = xNum.multiply(xDem.modInverse(P));
+        BigInteger myY = yNum.multiply(yDem.modInverse(P));
+        return new ECPoint(myX,myY);
+    }
+
+
+
+
     /**
      * Check if provided x and y coordinate pair are a point
      * on the e5211 curve where:
