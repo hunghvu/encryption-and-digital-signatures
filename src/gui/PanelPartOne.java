@@ -1,3 +1,5 @@
+package gui;
+
 /**
  * This class represents panel for part 1 of the project.
  */
@@ -10,6 +12,9 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.UIManager;
+
+import kmac.KCrypt;
+import util.UtilGui;
 
 public class PanelPartOne extends JPanel {
   private static final JLabel LABEL = new JLabel("Choose one of 3 options below.");
