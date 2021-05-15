@@ -7,16 +7,23 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 public class GUI {
 
     public static void main(String[] args) {
-        final JFrame frame = new JFrame();
-        frame.setSize(700, 300);
-        displayPart1(frame);
-        frame.setVisible(true);
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                final JFrame frame = new JFrame();
+                frame.setSize(700, 400);
+                displayPart1(frame);
+                frame.setVisible(true);
+            }
+        });       
     }
 
     // Show application window
@@ -24,20 +31,32 @@ public class GUI {
 
         final JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
-        final JLabel labelFile1 = new JLabel("Choose one of 3 options below.");
+        final JLabel label = new JLabel("Choose one of 3 options below.");
+
         final JLabel labelEmpty1 = new JLabel(" ");
-        final JLabel labelFile2 = new JLabel("1. Get SHA3 of a chosen file.");
-        final JButton buttonBrowseSha3 = new JButton("SHA3 - file");
+        final JLabel labelOption1 = new JLabel("1. Get SHA3 of a chosen file.");
+        final JButton buttonOption1 = new JButton("SHA3 - file");
 
         final JLabel labelEmpty2 = new JLabel(" ");
-        final JLabel labelInput = new JLabel("2. Get SHA3 of an input text. Enter your text in blank field below.");
-        final JTextArea textInput = new JTextArea();
-        final JButton buttonTextInput = new JButton("SHA3 - text input");
+        final JLabel labelOption2 = new JLabel("2. Get SHA3 of an input text. Enter your text in blank field below.");
+        final JTextArea textOption2 = new JTextArea();
+        textOption2.setLineWrap(true);
+        final JScrollPane scrollOption2 = new JScrollPane(textOption2);
+        final JButton buttonOption2 = new JButton("SHA3 - text input");
 
         final JLabel labelEmpty3 = new JLabel(" ");
-        final JButton buttonBrowseMac = new JButton("MAC - file");
-        final JLabel labelMac = new JLabel("3. Get MAC of a chosen file. Enter MAC passphrase below (empty field is an empty passphrase)");
-        final JTextArea textMacPassphrase = new JTextArea();
+        final JLabel labelOption3 = new JLabel("3. Get MAC of a chosen file. Enter MAC passphrase below (empty field is an empty passphrase)");
+        final JTextArea textOption3 = new JTextArea();
+        textOption3.setLineWrap(true);
+        final JScrollPane scrollOption3 = new JScrollPane(textOption3);
+        final JButton buttonOption3 = new JButton("MAC - file");
+
+        final JLabel labelEmpty4 = new JLabel(" ");
+        final JLabel labelOutput = new JLabel("Console (for output)");
+        final JTextArea textOutput = new JTextArea();
+        textOutput.setEditable(false);
+        textOutput.setLineWrap(true);
+        final JScrollPane scrollOutput = new JScrollPane(textOutput);
 
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -45,35 +64,42 @@ public class GUI {
             System.out.println(e);
         }
 
-        buttonBrowseSha3.addActionListener(event -> {
+        buttonOption1.addActionListener(event -> {
             final File directory = actionBrowse();
-            // System.out.println(directory.getAbsolutePath());
-            System.out.println("SHA3 of your file is: " + KCrypt.get_sha3_file(directory));
+            String outval = directory == null ? "Error: You must chose a file!" : "SHA3 of your file is: " + KCrypt.get_sha3_file(directory);
+            textOutput.setText(outval);
         });
-        buttonTextInput.addActionListener(event -> {
-            final String m = textInput.getText();
-            System.out.println("SHA3 of your text input is: " + KCrypt.get_sha3_text(m));
+        buttonOption2.addActionListener(event -> {
+            final String m = textOption2.getText();
+            textOutput.setText("SHA3 of your text input is: " + KCrypt.get_sha3_text(m));
         });
-        buttonBrowseMac.addActionListener(event -> {
+        buttonOption3.addActionListener(event -> {
             final File directory = actionBrowse();
-            String passphrase = textMacPassphrase.getText();
-            System.out.println("MAC of your file is: " + KCrypt.get_mac_file(directory, passphrase));
+            String passphrase = textOption3.getText();
+            String outval = directory == null ? "Error: You must chose a file!" : "MAC of your file is: " + KCrypt.get_mac_file(directory, passphrase);
+            textOutput.setText(outval);
 
         });
-        panel.add(labelFile1);
+        panel.add(label);
+
         panel.add(labelEmpty1);
-        panel.add(labelFile2);
-        panel.add(buttonBrowseSha3);
+        panel.add(labelOption1);
+        panel.add(buttonOption1);
 
         panel.add(labelEmpty2);
-        panel.add(labelInput);
-        panel.add(textInput);
-        panel.add(buttonTextInput);
+        panel.add(labelOption2);
+        panel.add(scrollOption2);
+        panel.add(buttonOption2);
 
         panel.add(labelEmpty3);
-        panel.add(labelMac);
-        panel.add(textMacPassphrase);
-        panel.add(buttonBrowseMac);
+        panel.add(labelOption3);
+        panel.add(scrollOption3);
+        panel.add(buttonOption3);
+
+        panel.add(labelEmpty4);
+        panel.add(labelOutput);
+        panel.add(scrollOutput);
+
         panel.setVisible(true);
         frame.add(panel);
 
@@ -88,9 +114,7 @@ public class GUI {
         File directory = null;
         if (choice == JFileChooser.APPROVE_OPTION) {
             directory = MYF_FILE_CHOOSER.getSelectedFile();
-        } else {
-            System.out.println("You must choose a file!");
-        }
+        } 
         return directory;
     }
 }
