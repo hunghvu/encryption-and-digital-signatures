@@ -1,5 +1,3 @@
-package ec;
-
 import java.math.BigInteger;
 
 public class ECPoint {
