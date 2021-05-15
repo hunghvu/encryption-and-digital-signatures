@@ -5,7 +5,7 @@
  */
 import java.util.*;
 
-public class Main {
+public class MainTestKMAC {
 
   static byte[] sha;
   static byte[] buf;

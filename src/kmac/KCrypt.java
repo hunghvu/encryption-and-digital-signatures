@@ -16,8 +16,7 @@ public class KCrypt {
 		// Convert passphrase to byte array
 		byte[] pw = (pass != null && pass.length() > 0) ? pass.getBytes() : new byte[0];
 
-		try {
-			FileOutputStream outputStream = new FileOutputStream(outfile + ".cryptogram");
+		try (FileOutputStream outputStream = new FileOutputStream(outfile + ".cryptogram")){
 			outputStream.write(encrypt(enc, pw));
 		} catch (IOException e) {
 			e.printStackTrace();
