@@ -1,6 +1,3 @@
-package kmac;
-
-
 /**
  * Test code for Sha3.java, adapted from version created by: 
  * Markku-Juhani O. Saarinen <mjos@iki.fi> - https://github.com/mjosaarinen/tiny_sha3

@@ -1,10 +1,7 @@
-package kmac;
-
 import java.math.BigInteger;
 
 import java.util.Arrays;
 
-import util.UtilMethods;
 
 /**
  * SHA3 implementation, adapted from version created by: 
