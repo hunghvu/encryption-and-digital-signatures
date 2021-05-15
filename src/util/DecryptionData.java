@@ -1,5 +1,3 @@
-package util;
-
 /**
  * Encapsulation of decrypted data and its validity.
  * @author Phong Hoang Le
