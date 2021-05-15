@@ -1,3 +1,5 @@
+package kmac;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -5,6 +7,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.security.SecureRandom;
 import java.util.Arrays;
+
+import util.UtilMethods;
+import util.DecryptionData;
 
 public class KCrypt {
 
