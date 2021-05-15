@@ -1,10 +1,10 @@
-package kmac;
-
-/**
- * Test code for Sha3.java, adapted from version created by: 
+package kmac; /**
+ * Test code for Sha3.java, adapted from version created by:
  * Markku-Juhani O. Saarinen <mjos@iki.fi> - https://github.com/mjosaarinen/tiny_sha3
  * Paulo Barreto - Code preseted during office hour
  */
+import org.bouncycastle.jcajce.provider.digest.SHA3;
+
 import java.util.*;
 
 public class MainTestKMAC {
@@ -84,7 +84,7 @@ public class MainTestKMAC {
 
     int i, fails, msg_len, sha_len;
 
-    SHA3 sha3 = new SHA3();
+    Sha3 sha3 = new Sha3();
 
     fails = 0;
     for (i = 0; i < 4; i++) {
@@ -124,7 +124,7 @@ public class MainTestKMAC {
 
     int i, j, fails;
     // sha3_ctx_t sha3;
-    SHA3 sha3 = new SHA3();
+    Sha3 sha3 = new Sha3();
     buf = new byte[32];
     ref = new byte[32];
 
@@ -198,7 +198,7 @@ public class MainTestKMAC {
       test_readhex(buf, testvec[i][0].toCharArray(), Integer.valueOf(testvec[i][1]).intValue()); // input
       test_readhex(ref, testvec[i][4].toCharArray(), 64); // output
 
-      byte[] outval = SHA3.cShake256(
+      byte[] outval = Sha3.cShake256(
     	buf, // X
         8*ref.length, // L
         testvec[i][2], // N
@@ -263,7 +263,7 @@ public class MainTestKMAC {
       test_readhex(ref, testvec[i][4].toCharArray(), 64); // output
       test_readhex(key, testvec[i][0].toCharArray(), 32); // key
 
-      byte[] outval = SHA3.KMACXOF256(
+      byte[] outval = Sha3.KMACXOF256(
         key, // K
         buf, // X
         8*ref.length, // L

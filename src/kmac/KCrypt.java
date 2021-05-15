@@ -1,5 +1,9 @@
 package kmac;
 
+
+import util.DecryptionData;
+import util.UtilMethods;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -7,9 +11,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.security.SecureRandom;
 import java.util.Arrays;
-
-import util.UtilMethods;
-import util.DecryptionData;
 
 public class KCrypt {
 
@@ -36,15 +37,15 @@ public class KCrypt {
 		rand.nextBytes(z);
 
 		// (ke || ka) = KMACXOF256(z || pw, ��, 1024, �S�)
-		byte[] ke_ka = SHA3.KMACXOF256(UtilMethods.concat(z, pwd), new byte[] {}, 1024, "S");
+		byte[] ke_ka = Sha3.KMACXOF256(UtilMethods.concat(z, pwd), new byte[] {}, 1024, "S");
 
 		byte[] ke = Arrays.copyOfRange(ke_ka, 0, 64);
 		// c = KMACXOF256(ke, ��, |m|, �SKE�) XOR m
-		byte[] c = UtilMethods.xorBytes(SHA3.KMACXOF256(ke, new byte[] {}, 8 * message.length, "SKE"), message);
+		byte[] c = UtilMethods.xorBytes(Sha3.KMACXOF256(ke, new byte[] {}, 8 * message.length, "SKE"), message);
 
 		byte[] ka = Arrays.copyOfRange(ke_ka, 64, 128);
 		// t = KMACXOF256(ka, m, 512, "SKA)
-		byte[] t = SHA3.KMACXOF256(ka, message, 512, "SKA");
+		byte[] t = Sha3.KMACXOF256(ka, message, 512, "SKA");
 
 		// symmetric cryptogram: (z, c, t)
 		ByteArrayOutputStream symCryptogram = new ByteArrayOutputStream();
@@ -96,17 +97,17 @@ public class KCrypt {
 		byte[] t = Arrays.copyOfRange(enc, enc.length - 64, enc.length);
 
 		// (ke || ka) = KMACXOF256(z || pw, ��, 1024, �S�)
-		byte[] ke_ka = SHA3.KMACXOF256(UtilMethods.concat(z, pwd), new byte[] {}, 1024, "S");
+		byte[] ke_ka = Sha3.KMACXOF256(UtilMethods.concat(z, pwd), new byte[] {}, 1024, "S");
 
 		// Separate (ke||ka)
 		byte[] ke = Arrays.copyOfRange(ke_ka, 0, 64);
 		byte[] ka = Arrays.copyOfRange(ke_ka, 64, 128);
 
 		// m = KMACXOF256(ke, ��, |c|, �SKE�) XOR c
-		byte[] m = UtilMethods.xorBytes(SHA3.KMACXOF256(ke, new byte[] {}, 8 * c.length, "SKE"), c);
+		byte[] m = UtilMethods.xorBytes(Sha3.KMACXOF256(ke, new byte[] {}, 8 * c.length, "SKE"), c);
 
 		// t� = KMACXOF256(ka, m, 512, �SKA�)
-		byte[] t_prime = SHA3.KMACXOF256(ka, m, 512, "SKA");
+		byte[] t_prime = Sha3.KMACXOF256(ka, m, 512, "SKA");
 
 		return new DecryptionData(m, Arrays.equals(t, t_prime));
 	}
@@ -119,7 +120,7 @@ public class KCrypt {
 			int length = 512;
 			String s = "D";
 			// Must use "".getBbytes(), not an empty key byte array.
-			byte[] outval = SHA3.KMACXOF256("".getBytes(), data, length, s);
+			byte[] outval = Sha3.KMACXOF256("".getBytes(), data, length, s);
 			sb.append(UtilMethods.bytesToHex(outval));
 
 		} catch (IOException e) {
@@ -133,7 +134,7 @@ public class KCrypt {
 		byte[] data = m.getBytes();
 		int length = 512;
 		String s = "D";
-		byte[] outval = SHA3.KMACXOF256("".getBytes(), data, length, s);
+		byte[] outval = Sha3.KMACXOF256("".getBytes(), data, length, s);
 		return UtilMethods.bytesToHex(outval);
 	}
 
@@ -145,7 +146,7 @@ public class KCrypt {
 			int length = 512;
 			String s = "T";
 			// Must use "".getBbytes(), not an empty key byte array.
-			byte[] outval = SHA3.KMACXOF256(passphrase.getBytes(), data, length, s);
+			byte[] outval = Sha3.KMACXOF256(passphrase.getBytes(), data, length, s);
 			sb.append(UtilMethods.bytesToHex(outval));
 
 		} catch (IOException e) {

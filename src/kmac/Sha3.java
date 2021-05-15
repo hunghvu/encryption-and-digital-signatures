@@ -1,16 +1,18 @@
 package kmac;
 
+
+import util.UtilMethods;
+
 import java.math.BigInteger;
 
 import java.util.Arrays;
-import util.UtilMethods;
 
 /**
  * SHA3 implementation, adapted from version created by: 
  * Markku-Juhani O. Saarinen <mjos@iki.fi> - https://github.com/mjosaarinen/tiny_sha3
  * Paulo Barreto - Code preseted during office hour
  */
-public class SHA3 {
+public class Sha3 {
 
   public byte[] st = new byte[200]; // st->q
   public int pt, rsiz, mdlen;
@@ -33,7 +35,7 @@ public class SHA3 {
   private static final byte[] left_encode_0 = {(byte)0x01, (byte)0x00}; // left_encode(0)
 
 
-  public SHA3() {
+  public Sha3() {
 
   }
 
@@ -53,7 +55,7 @@ public class SHA3 {
    * The Keccack-p permutation, ref section 3.3 NIST FIPS 202. Adapted from
    * https://github.com/mjosaarinen/tiny_sha3/blob/master/sha3.c
    * 
-   * @param stateIn the input state array
+   * @param
    * @return the state after the Keccak-p permutation has been applied
    */
   private void sha3_keccakf(byte[/* 200 */] v) {
@@ -263,7 +265,7 @@ public class SHA3 {
    */
   static byte[] cShake256(byte[] X, int L, String N, String S) {
 	byte[] out = new byte[L >>> 3];
-	SHA3 sha3 = new SHA3();
+	Sha3 sha3 = new Sha3();
 	
 	sha3.cShake256_init(N, S);
 	
@@ -306,7 +308,7 @@ public class SHA3 {
    */
   static byte[] KMACXOF256(byte[] K, byte[] X, int L, String S) {
 	byte[] out = new byte[L >>> 3];
-	SHA3 sha3 = new SHA3();
+	Sha3 sha3 = new Sha3();
 	
 	sha3.KMACXOF256_init(K, S);
 	
@@ -404,7 +406,7 @@ public class SHA3 {
    * https://crypto.stackexchange.com/questions/75269/sha3-the-left-right-encode-functions
    * https://cryptologie.net/article/388/shake-cshake-and-some-more-bit-ordering/
    * 
-   * @param x an arbitrary large integer with validity Conditions: 0 <= x < 2^2040
+   * @param
    */
   private static byte[] right_encode(int c){
     BigInteger x = BigInteger.valueOf(c);

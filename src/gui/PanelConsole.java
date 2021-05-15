@@ -1,6 +1,4 @@
-package gui;
-
-/**
+package gui; /**
  *   This is the panel for console, all tab should use the same console for better UX.
  */
 import javax.swing.BoxLayout;
