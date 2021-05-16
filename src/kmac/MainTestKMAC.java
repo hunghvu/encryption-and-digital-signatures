@@ -3,7 +3,7 @@ package kmac; /**
  * Markku-Juhani O. Saarinen <mjos@iki.fi> - https://github.com/mjosaarinen/tiny_sha3
  * Paulo Barreto - Code preseted during office hour
  */
-import org.bouncycastle.jcajce.provider.digest.SHA3;
+import kmac.Sha3;
 
 import java.util.*;
 
