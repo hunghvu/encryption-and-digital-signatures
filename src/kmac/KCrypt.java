@@ -62,10 +62,11 @@ public class KCrypt {
 	 * @param pass    passphrase
 	 * @param outFile output file url
 	 */
-	public static void decryptFile(String inFile, String pass, String outFile) {
+	public static String decryptFile(String inFile, String pass, String outFile) {
 
 		// Read byte array from file.
 		byte[] enc = UtilMethods.readFileBytes(inFile);
+		if (enc == null) return "Error occurred while reading file.";
 
 		// Convert passphrase string to byte array.
 		byte[] pw = (pass != null && pass.length() > 0) ? pass.getBytes() : new byte[0];
@@ -76,9 +77,9 @@ public class KCrypt {
 		// Respond base on the validity of decrypted data.
 		if (dec.isValid()) {
 			UtilMethods.writeBytesToFile(dec.getData(), outFile);
-			System.out.println("Decrypted data has been written to " + outFile);
+			return "Decrypted data has been written to " + outFile;
 		} else {
-			System.out.println("Authentication is invalid. Decryption has failed.");
+			return "Authentication is invalid. Decryption has failed";
 		}
 	}
 

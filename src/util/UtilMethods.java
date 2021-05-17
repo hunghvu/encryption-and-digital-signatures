@@ -63,11 +63,9 @@ public class UtilMethods {
             fileIn.close();
         } catch (FileNotFoundException fne) {
             System.out.println("Unable to locate file from path: " + filePath + ", is the URL correct?");
-            System.exit(1);
         } catch (IOException iox) {
             System.out.println("Error occurred while reading file: ." + filePath);
             iox.printStackTrace();
-            System.exit(1);
         }
         
         return out;

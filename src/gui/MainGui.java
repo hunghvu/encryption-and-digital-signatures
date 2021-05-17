@@ -17,6 +17,12 @@ public class MainGui {
 
         TABBED_PANE.addTab("Part 1",new PanelPartOne(PanelConsole.getConsoleElement()));
         TABBED_PANE.setMnemonicAt(0, 1);
+        
+        /**
+         * Add a panel for authenticated decryption scheme based on KMAC.
+         */
+        TABBED_PANE.addTab("KMAC Decrypt",new KDecryptPanel());
+        TABBED_PANE.setMnemonicAt(0, 1);
 
         TABBED_PANE.addTab("Part 2 - encryption/decryption", new JPanel() /* Change this panel to a proper one */);
         TABBED_PANE.setMnemonicAt(0, 2);
@@ -74,7 +80,7 @@ public class MainGui {
                         
                     }
                 });
-                frame.setSize(700, 400);
+                frame.setSize(700, 600);
                 frame.add(TABBED_PANE);
                 frame.add(PANEL_CONSOLE);
                 frame.setVisible(true);
