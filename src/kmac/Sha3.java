@@ -306,7 +306,7 @@ public class Sha3 {
    * @param S	 custom string
    * @return 	 disgest
    */
-  static byte[] KMACXOF256(byte[] K, byte[] X, int L, String S) {
+  public static byte[] KMACXOF256(byte[] K, byte[] X, int L, String S) {
 	byte[] out = new byte[L >>> 3];
 	Sha3 sha3 = new Sha3();
 	
