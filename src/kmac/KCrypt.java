@@ -8,9 +8,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.nio.file.Files;
 import java.security.SecureRandom;
 import java.util.Arrays;
+import java.util.HashMap;
+
+import ec.ECPoint;
 
 public class KCrypt {
 
@@ -154,6 +158,25 @@ public class KCrypt {
 			System.out.println("get_sha3_file IOException");
 		}
 		return sb.toString();
+	}
+
+	// Generating a (Schnorr/ECDHIES) key pair from passphrase pw
+	public static HashMap<BigInteger, ECPoint> get_keypair(String passphrase) {
+
+		byte[] data = "".getBytes();
+		int length = 512;
+		String s = "K";
+		byte[] outval = Sha3.KMACXOF256(passphrase.getBytes(), data, length, s);
+		// s <- KMACXOF256(pw, “”, 512, “K”); s <- 4s. (s) in this case is outvalKey
+		BigInteger outvalKey = (new BigInteger(outval)).multiply(BigInteger.valueOf(4));
+		// The curve has a special point 𝐺 ≔ (𝑥 0 , 𝑦 0 ) called its public generator, with 𝑥 0 = 4 and 𝑦 0 a certain unique even number.
+		ECPoint g = new ECPoint(BigInteger.valueOf(4), /* What is y? */);
+		// V <- s*G
+		ECPoint v = g.multiply(outvalKey);
+		HashMap<BigInteger, ECPoint> keypair = new HashMap<>();
+		// key pair: (s, V)
+		keypair.put(outvalKey, v);
+		return keypair;
 	}
 
 }
