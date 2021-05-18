@@ -40,26 +40,20 @@ public class KDecryptPanel extends JPanel {
 	/** Decrypt button. */
 	private static final JButton decryptButton = new JButton("Decrypt");
 	
-	/** Result label. */
-	private static final JLabel resultLabel = new JLabel("Result:");
-	
-	/** Out screen. */
-	private static final JTextArea resultText = new JTextArea();
-	
 	/**
 	 * Construct new panel for decryption scheme based on KMACXOF256.
 	 */
-	public KDecryptPanel() {
+	public KDecryptPanel(JTextArea console) {
 		super();
 		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-		initialize(); // Set up components
+		initialize(console); // Set up components
 		setVisible(true);
 	}
 	
 	/**
 	 * Add components and their functionalities for the panel
 	 */
-	private void initialize() {
+	private void initialize(JTextArea console) {
 		finButton.setAlignmentX(JButton.LEFT_ALIGNMENT);
 		finButton.addActionListener(event -> {
 			File inPath = UtilGui.actionBrowse();
@@ -88,13 +82,8 @@ public class KDecryptPanel extends JPanel {
 		passText.setMaximumSize(passText.getPreferredSize());
 		
 		decryptButton.addActionListener(event -> {
-			resultText.setText(KCrypt.decryptFile(inText.getText(), passText.getText(), outText.getText()));
-		});
-		
-		resultLabel.setAlignmentX(JLabel.LEFT_ALIGNMENT);
-		
-		resultText.setAlignmentX(JTextArea.LEFT_ALIGNMENT);
-		resultText.setEditable(false);
+			console.setText(KCrypt.decryptFile(inText.getText(), passText.getText(), outText.getText()));
+		});		
 		
 		this.add(finButton);
 		this.add(inText);
@@ -107,8 +96,7 @@ public class KDecryptPanel extends JPanel {
 		this.add(Box.createRigidArea(new Dimension(0,10))); // Add space
 		this.add(decryptButton);
 		this.add(Box.createRigidArea(new Dimension(0,10))); // Add space
-		this.add(resultLabel);
-		this.add(resultText);
+
 
 	}
 
