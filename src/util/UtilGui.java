@@ -40,4 +40,17 @@ public class UtilGui {
         } 
         return directory;
       }
+    
+    /**
+     * Create output path for decryption.
+     * Code taken from: https://stackoverflow.com/questions/605696/get-file-name-from-url
+     * @param inURL input file url
+     * @param outFolder output folder
+     * @return output path url
+     */
+    public static String createOutPath(String inURL, String outFolder) {
+    	String fileName = inURL.substring(inURL.lastIndexOf('\\')+1, inURL.length() );
+    	String fileNameWithoutExtn = fileName.substring(0, fileName.lastIndexOf('.'));
+    	return outFolder + "\\" + fileNameWithoutExtn;
+    }
 }

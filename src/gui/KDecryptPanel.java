@@ -73,7 +73,7 @@ public class KDecryptPanel extends JPanel {
 		
 		foutButton.setAlignmentX(JButton.LEFT_ALIGNMENT);
 		foutButton.addActionListener(event -> {
-			File outPath = UtilGui.actionBrowse();
+			File outPath = UtilGui.pathBrowse();
 			if (outPath != null) outText.setText(outPath.getPath());
 		});
 		
@@ -88,7 +88,8 @@ public class KDecryptPanel extends JPanel {
 		passText.setMaximumSize(passText.getPreferredSize());
 		
 		decryptButton.addActionListener(event -> {
-			resultText.setText(KCrypt.decryptFile(inText.getText(), passText.getText(), outText.getText()));
+			String outputPath = UtilGui.createOutPath(inText.getText(), outText.getText());
+			resultText.setText(KCrypt.decryptFile(inText.getText(), passText.getText(), outputPath));
 		});
 		
 		resultLabel.setAlignmentX(JLabel.LEFT_ALIGNMENT);
