@@ -17,13 +17,13 @@ public class MainGui {
 
     public static void main(String[] args) {
 
-        TABBED_PANE.addTab("Part 1",new PanelPartOne(PanelConsole.getConsoleElement()));
+        TABBED_PANE.addTab("Part 1 - SHA3",new PanelPartOne(PanelConsole.getConsoleElement()));
         TABBED_PANE.setMnemonicAt(0, 1);
         
         /**
          * Add a panel for authenticated decryption scheme based on KMAC.
          */
-        TABBED_PANE.addTab("KMAC Decrypt",new KDecryptPanel());
+        TABBED_PANE.addTab("Part1 - KMAC Decrypt",new KDecryptPanel(PanelConsole.getConsoleElement()));
         TABBED_PANE.setMnemonicAt(0, 1);
 
         TABBED_PANE.addTab("Part 2 - encryption/decryption", new JPanel() /* Change this panel to a proper one */);
