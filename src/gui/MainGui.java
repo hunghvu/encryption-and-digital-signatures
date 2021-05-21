@@ -8,6 +8,8 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 
+import util.UtilGui;
+
 public class MainGui {
 
     private static final JTabbedPane TABBED_PANE = new JTabbedPane();
@@ -80,7 +82,7 @@ public class MainGui {
                         
                     }
                 });
-                frame.setSize(700, 600);
+                frame.setSize(UtilGui.X_AXIS, UtilGui.Y_AXIS);
                 frame.add(TABBED_PANE);
                 frame.add(PANEL_CONSOLE);
                 frame.setVisible(true);
