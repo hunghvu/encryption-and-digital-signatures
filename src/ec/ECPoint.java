@@ -7,13 +7,13 @@ public class ECPoint {
 	/** The neutral element of the curve. */
     public static final ECPoint ZERO = new ECPoint(BigInteger.ZERO, BigInteger.ONE);
 	/** The quantity d in the equation of E_521. */
-    private static final BigInteger D = BigInteger.valueOf(-376014);
+    public static final BigInteger D = BigInteger.valueOf(-376014);
+    /** Mersenne prime. */
+	public static final BigInteger P = BigInteger.valueOf(2).pow(521).subtract(BigInteger.ONE);
     /** x coordinate. */
     private BigInteger x;
     /** y coordinate. */
     private BigInteger y;
-	/** Mersenne prime. */
-	private static final BigInteger P = BigInteger.valueOf(2).pow(521).subtract(BigInteger.ONE);
 	/** The lengthy value used to compute R. */
     private static final String RSUB = "337554763258501705789107630418782636071904961214051226618635150085779108655765";
     /**
