@@ -169,8 +169,16 @@ public class KCrypt {
 		byte[] outval = Sha3.KMACXOF256(passphrase.getBytes(), data, length, s);
 		// s <- KMACXOF256(pw, “”, 512, “K”); s <- 4s. (s) in this case is outvalKey
 		BigInteger outvalKey = (new BigInteger(outval)).multiply(BigInteger.valueOf(4));
+		// Get point y of base point g, 𝑦 =±√(1 − 𝑥^2 )/(1 + 376014𝑥^2 ) mod 𝑝
+		// Where nominator is (1-x^2) and denominator is (1 + 376014x^2)
+		BigInteger x = BigInteger.valueOf(4);
+		BigInteger xSquare = x.modPow(BigInteger.valueOf(2),  ECPoint.P);
+		BigInteger radicandNominator = BigInteger.ONE.subtract(xSquare); // (1-x^2)
+		BigInteger radicandDenominator = BigInteger.ONE.add(BigInteger.valueOf(-1 * ECPoint.D.intValue()).multiply(xSquare).mod(ECPoint.P)); // (1 + 376014𝑥^2)
+		BigInteger y = ECPoint.sqrt(radicandNominator.multiply(radicandDenominator.modInverse(ECPoint.P)),ECPoint.P, false); // Final y
+
 		// The curve has a special point 𝐺 ≔ (𝑥 0 , 𝑦 0 ) called its public generator, with 𝑥 0 = 4 and 𝑦 0 a certain unique even number.
-		ECPoint g = new ECPoint(BigInteger.valueOf(4), /* What is y? */);
+		ECPoint g = new ECPoint(x, y);
 		// V <- s*G
 		ECPoint v = g.multiply(outvalKey);
 		HashMap<BigInteger, ECPoint> keypair = new HashMap<>();
