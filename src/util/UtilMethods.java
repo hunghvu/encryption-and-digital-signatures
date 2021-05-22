@@ -76,19 +76,17 @@ public class UtilMethods {
      * @param toWrite byte arrays used to write to file
      * @param filePath path of destination file
      */
-    public static void writeBytesToFile(byte[] toWrite, String filePath) {
+    public static String writeBytesToFile(byte[] toWrite, String filePath) {
         try {
             FileOutputStream outFile = new FileOutputStream(filePath);
             outFile.write(toWrite);
             outFile.close();
         } catch (FileNotFoundException e) {
-            System.out.println("Unable to locate file from path: " + filePath + ", is the URL correct?");
-            System.exit(1);
+            return "Unable to locate file from path: " + filePath + ", is the URL correct?";
         } catch (IOException iox) {
-            System.out.println("Error occurred while writing output to file.");
-            iox.printStackTrace();
-            System.exit(1);
+            return "Error occurred while writing output to file.";
         }
+        return "";
     }
     
     

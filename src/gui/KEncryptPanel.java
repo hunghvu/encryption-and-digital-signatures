@@ -60,7 +60,7 @@ public class KEncryptPanel extends JPanel implements Serializable {
         finButton.setAlignmentX(JButton.LEFT_ALIGNMENT);
         finButton.addActionListener(event -> {
             File inPath = UtilGui.actionBrowse();
-            inText.setText(inPath.getPath());
+            if (inPath != null) inText.setText(inPath.getPath());
         });
 
         inText.setAlignmentX(JTextField.LEFT_ALIGNMENT);
@@ -85,7 +85,7 @@ public class KEncryptPanel extends JPanel implements Serializable {
         passText.setMaximumSize(passText.getPreferredSize());
 
         encryptButton.addActionListener(event -> {
-            String outputPath = UtilGui.createOutPath(inText.getText(), outText.getText());
+            String outputPath = UtilGui.createEncOutPath(inText.getText(), outText.getText());
             try {
                 console.setText(KCrypt.encryptFile(inText.getText(), passText.getText(), outputPath));
             } catch (IOException e) {
