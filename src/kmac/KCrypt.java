@@ -14,7 +14,7 @@ import java.util.Arrays;
 
 public class KCrypt {
 
-	static void encryptFile(String inFile, String pass, String outfile) throws IOException {
+	public static String encryptFile(String inFile, String pass, String outfile) throws IOException {
 
 		// Read bytes from a file
 		byte[] enc = UtilMethods.readFileBytes(inFile);
@@ -27,7 +27,7 @@ public class KCrypt {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		System.out.println("Your file has been encrypted! Your file has been encrypted to " + UtilMethods.bytesToHex(enc));
+		return "your file has been encrypted" + outfile;
 	}
 
 	private static byte[] encrypt(byte[] message, byte[] pwd) throws IOException {

@@ -15,26 +15,26 @@ public class ECCrypt {
 	 * @param pass    passphrase
 	 * @param outFile output file url
 	 */
-	public static String decryptFile(String inFile, String pass, String outFile) {
-
-		// Read byte array from file.
-		byte[] enc = UtilMethods.readFileBytes(inFile);
-		if (enc == null) return "Error occurred while reading file.";
-
-		// Convert passphrase string to byte array.
-		byte[] pw = (pass != null && pass.length() > 0) ? pass.getBytes() : new byte[0];
-
-		// Decrypt with file and passphrase byte array.
-		DecryptionData dec = decrypt(enc, pw);
-
-		// Respond base on the validity of decrypted data.
-		if (dec.isValid()) {
-			UtilMethods.writeBytesToFile(dec.getData(), outFile);
-			return "Decrypted data has been written to " + outFile;
-		} else {
-			return "Authentication is invalid. Decryption has failed";
-		}
-	}
+//	public static String decryptFile(String inFile, String pass, String outFile) {
+//
+//		// Read byte array from file.
+//		byte[] enc = UtilMethods.readFileBytes(inFile);
+//		if (enc == null) return "Error occurred while reading file.";
+//
+//		// Convert passphrase string to byte array.
+//		byte[] pw = (pass != null && pass.length() > 0) ? pass.getBytes() : new byte[0];
+//
+//		// Decrypt with file and passphrase byte array.
+//		//DecryptionData dec = decrypt(enc, pw);
+//
+//		// Respond base on the validity of decrypted data.
+////		if (dec.isValid()) {
+////			UtilMethods.writeBytesToFile(dec.getData(), outFile);
+////			return "Decrypted data has been written to " + outFile;
+////		} else {
+////			return "Authentication is invalid. Decryption has failed";
+////		}
+//	}
 
 //	/**
 //	 * Decrypting a symmetric cryptogram under a passphrase with

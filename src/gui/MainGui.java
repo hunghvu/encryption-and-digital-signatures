@@ -26,6 +26,9 @@ public class MainGui {
         TABBED_PANE.addTab("Part1 - KMAC Decrypt",new KDecryptPanel(PanelConsole.getConsoleElement()));
         TABBED_PANE.setMnemonicAt(0, 1);
 
+        TABBED_PANE.addTab("Part1 - KMDAC Encrypt", new KEncryptPanel(PanelConsole.getConsoleElement()));
+        TABBED_PANE.setMnemonicAt(0,1);
+
         TABBED_PANE.addTab("Part 2 - encryption/decryption", new JPanel() /* Change this panel to a proper one */);
         TABBED_PANE.setMnemonicAt(0, 2);
 
