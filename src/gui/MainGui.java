@@ -17,23 +17,12 @@ public class MainGui {
 
     public static void main(String[] args) {
 
-        TABBED_PANE.addTab("Part 1 - SHA3",new PanelPartOne(PanelConsole.getConsoleElement()));
-        TABBED_PANE.setMnemonicAt(0, 1);
-        
-        /**
-         * Add a panel for authenticated decryption scheme based on KMAC.
-         */
-        TABBED_PANE.addTab("Part1 - KMAC Decrypt",new KDecryptPanel(PanelConsole.getConsoleElement()));
-        TABBED_PANE.setMnemonicAt(0, 1);
-
-        TABBED_PANE.addTab("Part1 - KMDAC Encrypt", new KEncryptPanel(PanelConsole.getConsoleElement()));
-        TABBED_PANE.setMnemonicAt(0,1);
-
-        TABBED_PANE.addTab("Part 2 - encryption/decryption", new JPanel() /* Change this panel to a proper one */);
-        TABBED_PANE.setMnemonicAt(0, 2);
-
-        TABBED_PANE.addTab("Part 2 - signature", new JPanel() /* Change this panel to a proper one */);
-        TABBED_PANE.setMnemonicAt(0, 3);
+        TABBED_PANE.addTab("KMAC Hashing",new PanelPartOne(PanelConsole.getConsoleElement()));     
+        TABBED_PANE.addTab("KMAC Encrypt", new KEncryptPanel(PanelConsole.getConsoleElement()));
+        TABBED_PANE.addTab("KMAC Decrypt",new KDecryptPanel(PanelConsole.getConsoleElement()));
+        TABBED_PANE.addTab("EC encryption", new JPanel() /* Change this panel to a proper one */);       
+        TABBED_PANE.addTab("EC decryption", new JPanel() /* Change this panel to a proper one */);
+        TABBED_PANE.addTab("EC signature", new JPanel() /* Change this panel to a proper one */);
 
 
         SwingUtilities.invokeLater(new Runnable() {

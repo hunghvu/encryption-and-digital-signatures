@@ -42,13 +42,26 @@ public class UtilGui {
       }
     
     /**
+     * Create output path for encryption.
+     * Code taken from: https://stackoverflow.com/questions/14526260/how-do-i-get-the-file-name-from-a-string-containing-the-absolute-file-path
+     * @param inURL input file url
+     * @param outFolder output folder
+     * @return output path url
+     */
+    public static String createEncOutPath(String inURL, String outFolder) {
+    	int index = inURL.lastIndexOf("\\");
+    	String fileName = inURL.substring(index + 1);
+    	return outFolder + "\\" + fileName;
+    }
+    
+    /**
      * Create output path for decryption.
      * Code taken from: https://stackoverflow.com/questions/605696/get-file-name-from-url
      * @param inURL input file url
      * @param outFolder output folder
      * @return output path url
      */
-    public static String createOutPath(String inURL, String outFolder) {
+    public static String createDecOutPath(String inURL, String outFolder) {
     	String fileName = inURL.substring(inURL.lastIndexOf('\\')+1, inURL.length() );
     	String fileNameWithoutExtn = fileName.substring(0, fileName.lastIndexOf('.'));
     	return outFolder + "\\" + fileNameWithoutExtn;
