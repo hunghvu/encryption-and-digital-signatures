@@ -1,15 +1,16 @@
 package ec;
 
 import java.math.BigInteger;
+import java.util.Arrays;
 
 public class ECPoint {
 
 	/** The neutral element of the curve. */
     public static final ECPoint ZERO = new ECPoint(BigInteger.ZERO, BigInteger.ONE);
 	/** The quantity d in the equation of E_521. */
-    public static final BigInteger D = BigInteger.valueOf(-376014);
+    private static final BigInteger D = BigInteger.valueOf(-376014);
     /** Mersenne prime. */
-	public static final BigInteger P = BigInteger.valueOf(2).pow(521).subtract(BigInteger.ONE);
+	public static final BigInteger P = BigInteger.valueOf(2L).pow(521).subtract(BigInteger.ONE);
     /** x coordinate. */
     private BigInteger x;
     /** y coordinate. */
@@ -21,6 +22,8 @@ public class ECPoint {
      * that number is n = 4r.
      */
     public static final BigInteger R = BigInteger.valueOf(2L).pow(519).subtract(new BigInteger(RSUB));
+    /** The fixed length of the byte array form of this point. */
+    public static final int BAL = P.toByteArray().length * 2;
 
     
     /**
@@ -33,6 +36,27 @@ public class ECPoint {
         this.x = x;
         this.y = y;
     }
+    
+    /**
+     * Create a curve point on the curve with the given x and a y that is
+     * generated based on x with the formula
+     * y = sqrt( (1 - x^2) / ( 1 - d * x^2) ) mod p
+     * @param x the x coordinate of the curve point 
+     * @param lsb the least significant bit of the y coordinate
+     */
+    public ECPoint(BigInteger x, boolean lsb) {
+		// Get point y of base point g, (+ or -)sqrt((1-x^2)/(1 + 376014x^2)) mod p
+		// Where nominator is (1-x^2) and denominator is (1 + 376014x^2)
+		BigInteger xSquare = x.modPow(BigInteger.valueOf(2), P);
+		BigInteger radicandNominator = BigInteger.ONE.subtract(xSquare); // (1-x^2)
+		BigInteger radicandDenominator = BigInteger.ONE.add(BigInteger.valueOf(-1 * D.intValue()).multiply(xSquare).mod(P)); // (1 + 376014x^2)
+        BigInteger sqrt = sqrt(radicandNominator.multiply(radicandDenominator.modInverse(P)), false); // Final y
+        
+        if (sqrt == null) throw new IllegalArgumentException("No square root of the provided x exists");
+        this.x = x;
+        this.y = sqrt.mod(P);
+    }
+
 
 
     /**
@@ -94,6 +118,40 @@ public class ECPoint {
 
         return V;
     }
+    
+    /**
+     * Convert ECPoint into a byte array of a fixed size based on the value of P.
+     * @return a byte array representation of this point.
+     */
+    public byte[] toByteArray() {
+    	byte[] result = new byte[BAL];
+    	// x, y's byte content
+    	byte[] xBytes = x.toByteArray(), yBytes = y.toByteArray();
+    	// x, y position in the result byte array
+    	int xPos = result.length/2 - xBytes.length, yPos = result.length - yBytes.length;
+    	//If x or y is negative, apply appropriate sign extension
+    	if (x.signum() < 0) Arrays.fill(result, 0, xPos, (byte) 0xff);
+    	if (y.signum() < 0) Arrays.fill(result, result.length/2, yPos, (byte) 0xff);
+    	// Put x and y's content onto result
+    	System.arraycopy(xBytes, 0, result, xPos, xBytes.length);
+    	System.arraycopy(yBytes, 0, result, yPos, yBytes.length);
+    	
+    	return result;
+    }
+    
+    /**
+     * Convert a byte array into an ECPoint.
+     * @param pBytes the input byte array
+     * @return the newly converted ECPoint.
+     */
+    public static ECPoint toECPoint(byte[] pBytes) {
+    	if (pBytes.length != BAL) throw new IllegalArgumentException("Provided byte array was not properly formatted");
+    	
+    	BigInteger x = new BigInteger(Arrays.copyOfRange(pBytes, 0, BAL/2));
+    	BigInteger y = new BigInteger(Arrays.copyOfRange(pBytes, BAL/2, BAL));
+    	
+    	return new ECPoint(x,y);
+    }
 
 
     /**
@@ -123,16 +181,16 @@ public class ECPoint {
     * @return a square root r of v mod p with r mod 2 = 1 iff lsb = true
     * if such a root exists, otherwise null.
     */
-    public static BigInteger sqrt(BigInteger v, BigInteger p, boolean lsb) {
-    	assert (p.testBit(0) && p.testBit(1)); // p = 3 (mod 4)
+    public static BigInteger sqrt(BigInteger v, boolean lsb) {
+    	assert (P.testBit(0) && P.testBit(1)); // p = 3 (mod 4)
         if (v.signum() == 0) {
         return BigInteger.ZERO;
         }
-        BigInteger r = v.modPow(p.shiftRight(2).add(BigInteger.ONE), p);
+        BigInteger r = v.modPow(P.shiftRight(2).add(BigInteger.ONE), P);
         if (r.testBit(0) != lsb) {
-        r = p.subtract(r); // correct the lsb
+        r = P.subtract(r); // correct the lsb
         }
-        return (r.multiply(r).subtract(v).mod(p).signum() == 0) ? r : null;
+        return (r.multiply(r).subtract(v).mod(P).signum() == 0) ? r : null;
     }
     
 

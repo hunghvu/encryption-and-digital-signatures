@@ -65,7 +65,7 @@ public class KCrypt {
 	}
 
 	/**
-	 * Decrypt a file with a passphrase.
+	 * KMAC Decrypt a file with a passphrase.
 	 * 
 	 * @param inFile  input file url
 	 * @param pass    passphrase
