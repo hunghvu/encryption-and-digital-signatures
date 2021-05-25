@@ -69,7 +69,7 @@ public class ECCrypt {
 	}	
 
 	// Generating a signature for a byte array m under passphrase pw:
-	public static HashMap<byte[], BigInteger> get_signature (byte[] m, String passphrase) {
+	public static ECSignature get_signature (byte[] m, String passphrase) {
 		// s <- KMACXOF256(pw, “”, 512, “K”)
 		byte[] s = Sha3.KMACXOF256(passphrase.getBytes(), "".getBytes(), 512, "K");
 		// s <- 4s
@@ -85,9 +85,16 @@ public class ECCrypt {
 		// z <- (k – hs) mod r
 		BigInteger hBigInteger = new BigInteger(h);
 		BigInteger zBigInteger = (kBigInteger.subtract(hBigInteger.multiply(sBigInteger))).mod(ECPoint.R);
-		HashMap<byte[], BigInteger> signature = new HashMap<>();
-		signature.put(h, zBigInteger);
-		return signature;
+		return new ECSignature(h, zBigInteger);
+	}
+
+	// Verifying a signature (h, z) for a byte array m under the (Schnorr/ECDHIES) public key V:
+	public static boolean verify_signature (byte[] m, ECSignature signature, ECPoint v){
+		// U <- z*G + h*V
+		ECPoint u = (ECKeyPair.G.multiply(signature.get_z())) // z*G
+			.add(v.multiply(new BigInteger(signature.get_h()))); // h*V
+		// accept if, and only if, KMACXOF256(U x , m, 512, “T”) = h
+		return Sha3.KMACXOF256(u.getX().toByteArray(), m, 512, "T").equals(signature.get_h()) ? true : false;
 	}
 
 }
