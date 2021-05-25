@@ -2,6 +2,7 @@ package ec;
 
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.HashMap;
 
 import kmac.Sha3;
 import util.DecryptionData;
@@ -66,5 +67,34 @@ public class ECCrypt {
 
 		return new DecryptionData(m, Arrays.equals(t, t_prime));
 	}	
+
+	// Generating a signature for a byte array m under passphrase pw:
+	public static ECSignature get_signature (byte[] m, String passphrase) {
+		// s <- KMACXOF256(pw, “”, 512, “K”)
+		byte[] s = Sha3.KMACXOF256(passphrase.getBytes(), "".getBytes(), 512, "K");
+		// s <- 4s
+		BigInteger sBigInteger = (new BigInteger(s)).multiply(BigInteger.valueOf(4L));
+		// k <- KMACXOF256(s, m, 512, “N”);
+		byte[] k = Sha3.KMACXOF256(sBigInteger.toByteArray(), m, 512, "N");
+		// k <- 4k
+		BigInteger kBigInteger = (new BigInteger(k)).multiply(BigInteger.valueOf(4L));
+		// U <- k*G
+		ECPoint u = ECKeyPair.G.multiply(kBigInteger);
+		// h <- KMACXOF256(U x , m, 512, “T”);
+		byte[] h = Sha3.KMACXOF256(u.getX().toByteArray(), m, 512, "T");
+		// z <- (k – hs) mod r
+		BigInteger hBigInteger = new BigInteger(h);
+		BigInteger zBigInteger = (kBigInteger.subtract(hBigInteger.multiply(sBigInteger))).mod(ECPoint.R);
+		return new ECSignature(h, zBigInteger);
+	}
+
+	// Verifying a signature (h, z) for a byte array m under the (Schnorr/ECDHIES) public key V:
+	public static boolean verify_signature (byte[] m, ECSignature signature, ECPoint v){
+		// U <- z*G + h*V
+		ECPoint u = (ECKeyPair.G.multiply(signature.get_z())) // z*G
+			.add(v.multiply(new BigInteger(signature.get_h()))); // h*V
+		// accept if, and only if, KMACXOF256(U x , m, 512, “T”) = h
+		return Sha3.KMACXOF256(u.getX().toByteArray(), m, 512, "T").equals(signature.get_h()) ? true : false;
+	}
 
 }
