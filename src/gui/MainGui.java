@@ -20,8 +20,8 @@ public class MainGui {
         TABBED_PANE.addTab("KMAC Hashing",new PanelPartOne(PanelConsole.getConsoleElement()));     
         TABBED_PANE.addTab("KMAC Encrypt", new KEncryptPanel(PanelConsole.getConsoleElement()));
         TABBED_PANE.addTab("KMAC Decrypt",new KDecryptPanel(PanelConsole.getConsoleElement()));
-        TABBED_PANE.addTab("EC encryption", new JPanel() /* Change this panel to a proper one */);       
-        TABBED_PANE.addTab("EC decryption", new JPanel() /* Change this panel to a proper one */);
+        TABBED_PANE.addTab("EC Encryption", new JPanel() /* Change this panel to a proper one */);       
+        TABBED_PANE.addTab("EC Decryption",new ECDecryptPanel(PanelConsole.getConsoleElement()));
         TABBED_PANE.addTab("EC signature", new JPanel() /* Change this panel to a proper one */);
 
 

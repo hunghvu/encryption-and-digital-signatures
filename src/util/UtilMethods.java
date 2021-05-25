@@ -62,10 +62,9 @@ public class UtilMethods {
             out = fileIn.readAllBytes();
             fileIn.close();
         } catch (FileNotFoundException fne) {
-            System.out.println("Unable to locate file from path: " + filePath + ", is the URL correct?");
+            return null;
         } catch (IOException iox) {
-            System.out.println("Error occurred while reading file: ." + filePath);
-            iox.printStackTrace();
+            return null;
         }
         
         return out;
@@ -111,6 +110,42 @@ public class UtilMethods {
 	        hexChars[j * 2 + 1] = HEX_ARRAY[v & 0x0F];
 	    }
 	    return new String(hexChars);
+    }
+    
+    /**
+     * Translates a hex digit (in the form of an ASCII character). 
+     */
+    private static int test_hexdigit(char ch) {
+        if (ch >= '0' && ch <= '9')
+          return ch - '0';
+        if (ch >= 'A' && ch <= 'F')
+          return ch - 'A' + 10;
+        if (ch >= 'a' && ch <= 'f')
+          return ch - 'a' + 10;
+        return -1;
+    }
+    
+    /**
+     * Convert hex string to byte array.
+     * @param hex the hex string
+     * @return the byte array representation of hex
+     */
+    public static byte[] hexToBytes(String hex) {
+    	int len = hex.length();
+    	if (len % 2 != 0) return null;
+    	byte[] out = new byte[hex.length()/2];
+	    int i, h, l;
+	
+	    for (i = 0; i < out.length; i++) {
+	      h = test_hexdigit(hex.charAt(2 * i));
+	      l = test_hexdigit(hex.charAt(2 * i + 1));
+	      if (h<0 || l < 0)
+	        return null;
+	
+	      out[i] = (byte) ((h << 4) + l);
+	    }
+
+        return out;
     }
 	
 

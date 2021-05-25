@@ -39,7 +39,7 @@ public class KCrypt {
 		}	
 	}
 
-	private static byte[] encrypt(byte[] message, byte[] pwd) throws IOException {
+	public static byte[] encrypt(byte[] message, byte[] pwd) throws IOException {
 		// z <-- Random(512)
 		SecureRandom rand = new SecureRandom();
 		byte[] z = new byte[64]; // 64 * 8 = 512
@@ -105,7 +105,7 @@ public class KCrypt {
 	 * @return DecryptionData holding ontaining the decrypted data and a validity
 	 *         flag.
 	 */
-	private static DecryptionData decrypt(byte[] enc, byte[] pwd) {
+	public static DecryptionData decrypt(byte[] enc, byte[] pwd) {
 		// Separate (z,c,t)
 		byte[] z = Arrays.copyOfRange(enc, 0, 64);
 		byte[] c = Arrays.copyOfRange(enc, 64, enc.length - 64);
