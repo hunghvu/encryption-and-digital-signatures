@@ -20,6 +20,9 @@ public class ECCrypt {
 	public static String decryptToFile(byte[] enc, BigInteger s, String outFile) {
 		// Decrypt data.
 		DecryptionData dec = decrypt(enc, s);
+		if (dec == null) {
+			return "Invalid message, please make sure the input is the data encrypted with EC Encrypt!";
+		}
 		
 		String result = UtilMethods.writeBytesToFile(enc, outFile);	
 		if (result.equals("")) {
@@ -46,6 +49,9 @@ public class ECCrypt {
 	private static DecryptionData decrypt(byte[] enc, BigInteger s) {
 		// Separate (Z,c,t)
 		ECPoint Z = ECPoint.toECPoint(Arrays.copyOfRange(enc, 0, ECPoint.BAL));
+		if (Z.getX() == null) {
+			return null;
+		}
 		byte[] c = Arrays.copyOfRange(enc, ECPoint.BAL, enc.length - 64);
 		byte[] t = Arrays.copyOfRange(enc, enc.length - 64, enc.length);
 		
@@ -70,19 +76,19 @@ public class ECCrypt {
 
 	// Generating a signature for a byte array m under passphrase pw:
 	public static ECSignature get_signature (byte[] m, String passphrase) {
-		// s <- KMACXOF256(pw, “”, 512, “K”)
+		// s <- KMACXOF256(pw, "", 512, "K")
 		byte[] s = Sha3.KMACXOF256(passphrase.getBytes(), "".getBytes(), 512, "K");
 		// s <- 4s
 		BigInteger sBigInteger = (new BigInteger(s)).multiply(BigInteger.valueOf(4L));
-		// k <- KMACXOF256(s, m, 512, “N”);
+		// k <- KMACXOF256(s, m, 512, "N");
 		byte[] k = Sha3.KMACXOF256(sBigInteger.toByteArray(), m, 512, "N");
 		// k <- 4k
 		BigInteger kBigInteger = (new BigInteger(k)).multiply(BigInteger.valueOf(4L));
 		// U <- k*G
 		ECPoint u = ECKeyPair.G.multiply(kBigInteger);
-		// h <- KMACXOF256(U x , m, 512, “T”);
+		// h <- KMACXOF256(U x , m, 512, "T");
 		byte[] h = Sha3.KMACXOF256(u.getX().toByteArray(), m, 512, "T");
-		// z <- (k – hs) mod r
+		// z <- (k - hs) mod r
 		BigInteger hBigInteger = new BigInteger(h);
 		BigInteger zBigInteger = (kBigInteger.subtract(hBigInteger.multiply(sBigInteger))).mod(ECPoint.R);
 		return new ECSignature(h, zBigInteger);
@@ -93,7 +99,7 @@ public class ECCrypt {
 		// U <- z*G + h*V
 		ECPoint u = (ECKeyPair.G.multiply(signature.get_z())) // z*G
 			.add(v.multiply(new BigInteger(signature.get_h()))); // h*V
-		// accept if, and only if, KMACXOF256(U x , m, 512, “T”) = h
+		// accept if, and only if, KMACXOF256(U x , m, 512, "T") = h
 		return Sha3.KMACXOF256(u.getX().toByteArray(), m, 512, "T").equals(signature.get_h()) ? true : false;
 	}
 

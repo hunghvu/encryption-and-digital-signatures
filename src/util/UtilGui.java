@@ -1,6 +1,8 @@
 package util;
 
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import javax.swing.JFileChooser;
 
@@ -43,27 +45,26 @@ public class UtilGui {
     
     /**
      * Create output path for encryption.
-     * Code taken from: https://stackoverflow.com/questions/14526260/how-do-i-get-the-file-name-from-a-string-containing-the-absolute-file-path
      * @param inURL input file url
      * @param outFolder output folder
      * @return output path url
      */
     public static String createEncOutPath(String inURL, String outFolder) {
-    	int index = inURL.lastIndexOf("\\");
-    	String fileName = inURL.substring(index + 1);
-    	return outFolder + "\\" + fileName;
+    	Path inPath = Paths.get(inURL);
+    	Path outPath = Paths.get(outFolder);
+    	return outPath + File.separator + inPath.getFileName();
     }
     
     /**
      * Create output path for decryption.
-     * Code taken from: https://stackoverflow.com/questions/605696/get-file-name-from-url
      * @param inURL input file url
      * @param outFolder output folder
      * @return output path url
      */
     public static String createDecOutPath(String inURL, String outFolder) {
-    	String fileName = inURL.substring(inURL.lastIndexOf('\\')+1, inURL.length() );
+    	Path inPath = Paths.get(inURL);
+    	String fileName = inPath.getFileName().toString();
     	String fileNameWithoutExtn = fileName.substring(0, fileName.lastIndexOf('.'));
-    	return outFolder + "\\" + fileNameWithoutExtn;
+    	return outFolder + File.separator + fileNameWithoutExtn;
     }
 }

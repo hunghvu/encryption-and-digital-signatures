@@ -32,7 +32,7 @@ public class ECPoint {
      * @param y the y coordinate of the point
      */
     public ECPoint(BigInteger x, BigInteger y) {
-        if (!isValidPair(x, y)) throw new IllegalArgumentException("The x and y are not valid for a point on E_521");
+        if (!isValidPair(x, y)) return;
         this.x = x;
         this.y = y;
     }
@@ -47,10 +47,10 @@ public class ECPoint {
     public ECPoint(BigInteger x, boolean lsb) {
 		// Get point y of base point g, (+ or -)sqrt((1-x^2)/(1 + 376014x^2)) mod p
 		// Where nominator is (1-x^2) and denominator is (1 + 376014x^2)
-		BigInteger xSquare = x.modPow(BigInteger.valueOf(2), P);
+		BigInteger xSquare = x.pow(2);
 		BigInteger radicandNominator = BigInteger.ONE.subtract(xSquare); // (1-x^2)
-		BigInteger radicandDenominator = BigInteger.ONE.add(BigInteger.valueOf(-1 * D.intValue()).multiply(xSquare).mod(P)); // (1 + 376014x^2)
-        BigInteger sqrt = sqrt(radicandNominator.multiply(radicandDenominator.modInverse(P)), false); // Final y
+		BigInteger radicandDenominator = BigInteger.ONE.subtract(D.multiply(xSquare)); // (1 + 376014x^2)
+        BigInteger sqrt = sqrt(radicandNominator.multiply(radicandDenominator.modInverse(P)), lsb); // Final y
         
         if (sqrt == null) throw new IllegalArgumentException("No square root of the provided x exists");
         this.x = x;
@@ -104,16 +104,11 @@ public class ECPoint {
      * @return
      */
     public ECPoint multiply (BigInteger s) {
-        // binary string of "s"
-        String binaryS = s.toString(2);
-
-        int k = binaryS.length();
-
-        // s = (s_k * s_k-1 … s_1 * s 0 ) 2 , s_k = 1.
-        ECPoint V = this;
-        for (int i = k - 1; i >= 0; i = i--){
+        int k = s.bitLength();
+        ECPoint V = ZERO;
+        for (int i = k; i >= 0; i--){
           V = V.add(V);
-          if (binaryS.charAt(i) == '1') V.add(this);
+          if (s.testBit(i)) V = V.add(this);
         }
 
         return V;
@@ -164,10 +159,13 @@ public class ECPoint {
      */
     private boolean isValidPair(BigInteger x, BigInteger y) {
         BigInteger l, r;
-
-        l = x.pow(2).add(y.pow(2)).mod(P); // (x^2 + y^2) mod p
-        r = BigInteger.ONE.add(D.multiply(x.pow(2).multiply(y.pow(2)))).mod(P); // (1 + d * x^2 * y^2) mod p
-
+        if (x.equals(BigInteger.ZERO) && y.equals(BigInteger.ONE)) {
+            r = BigInteger.ONE; // (1 + d * 0 * y^z) = 1
+            l = BigInteger.ONE; // (0 + 1) = 1
+        } else {
+	        l = x.pow(2).add(y.pow(2)).mod(P); // (x^2 + y^2) mod p
+	        r = BigInteger.ONE.add(D.multiply(x.pow(2).multiply(y.pow(2)))).mod(P); // (1 + d * x^2 * y^2) mod p
+        }
         return l.equals(r);
     }
     
