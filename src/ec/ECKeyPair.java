@@ -1,5 +1,6 @@
 package ec;
 
+import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.HashMap;
@@ -57,11 +58,13 @@ public class ECKeyPair {
 	/**
      * Encrypts the private key under the provided password, then
      * writes it to the path provided.
-     * @param url the desired file name
+     * @param pass passphrase
+     * @param path output file path
      */
-    public String encPrvToFile(byte[] pass, String path) {
+    public String writePrvToFile(String pass, String path) {
+    	path += File.separator + "PrivateKey";
         try {
-			UtilMethods.writeBytesToFile(KCrypt.encrypt(s.toByteArray(), pass), path);
+			UtilMethods.writeBytesToFile(KCrypt.encrypt(s.toByteArray(), pass.getBytes()), path);
 			return "Encrypted data has been written to " + path;
 		} catch (IOException e) {
 			return "Error occurred while writing output to file.";
@@ -84,6 +87,28 @@ public class ECKeyPair {
             return null;
         }
         return new ECKeyPair(new BigInteger(prvBytes.getData()));
+    }
+    
+    /**
+     * Retrieve a curve point from a file
+     * @param inPath the path to the public key file
+     */
+    public static ECPoint readPubKeyFile(String inPath) {
+    	return ECPoint.toECPoint(UtilMethods.readFileBytes(inPath));
+    }
+    
+    /**
+     * Write public key to a file
+     * @param outPath url of the output path
+     */
+    public String writePubToFile(String outPath) {
+    	outPath += File.separator + "PublicKey";
+    	String result = UtilMethods.writeBytesToFile(V.toByteArray(), outPath);
+    	if (result.equals("")) {
+    		return "Public key file has been written to " + outPath;
+    	} else {
+    		return result;
+    	}
     }
 
 
