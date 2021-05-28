@@ -3,9 +3,7 @@ package kmac; /**
  * Markku-Juhani O. Saarinen <mjos@iki.fi> - https://github.com/mjosaarinen/tiny_sha3
  * Paulo Barreto - Code preseted during office hour
  */
-import kmac.Sha3;
-
-import java.util.*;
+import java.util.Arrays;
 
 public class MainTestKMAC {
 

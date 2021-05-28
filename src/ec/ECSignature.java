@@ -2,11 +2,12 @@ package ec;
 
 import java.math.BigInteger;
 
+// This is stored in (*.sign) file.
 public class ECSignature {
   private byte[] h;
   private BigInteger z;
 
-  ECSignature(byte[] h, BigInteger z){
+  ECSignature(byte[] h, BigInteger z) {
     this.h = h;
     this.z = z;
   }
@@ -15,7 +16,7 @@ public class ECSignature {
     return this.h;
   }
 
-  public BigInteger get_z(){
+  public BigInteger get_z() {
     return this.z;
   }
 }

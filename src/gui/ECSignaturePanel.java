@@ -7,22 +7,15 @@ import java.io.File;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-import ec.ECKeyPair;
+import ec.ECCrypt;
 import util.UtilGui;
 
 public class ECSignaturePanel extends JPanel {
-
-  /** Out path button. */
-  private static final JButton foutButton = new JButton("Select Output Path Folder");
-
-  /** A component to show the output path. */
-  private static final JTextField outText = new JTextField(UtilGui.X_AXIS - 10);
 
   /** Passphrase request label. */
   private static final JLabel passLabel = new JLabel("Put passphrase to generate signature here, must be the same as passphrase used to create public key:");
@@ -54,20 +47,17 @@ public class ECSignaturePanel extends JPanel {
    */
   private void initialize(JTextArea console) {
 
-    foutButton.setAlignmentX(JButton.LEFT_ALIGNMENT);
-    foutButton.addActionListener(event -> {
-      File outPath = UtilGui.pathBrowse();
-      if (outPath != null)
-        outText.setText(outPath.getPath());
+    finButton.addActionListener(event -> {
+      File inPath = UtilGui.actionBrowse();
+      if (inPath != null)
+        inText.setText(inPath.getPath());
+    });
+    genButton.addActionListener(event -> {
+      console.setText(ECCrypt.writeSignatureToFile(passText.getText(), inText.getText()));
     });
 
-    outText.setAlignmentX(JTextField.LEFT_ALIGNMENT);
-    outText.setMaximumSize(outText.getPreferredSize());
-    outText.setBackground(Color.ORANGE);
-    outText.setEditable(false);
-
     inText.setAlignmentX(JTextField.LEFT_ALIGNMENT);
-    inText.setMaximumSize(outText.getPreferredSize());
+    inText.setMaximumSize(inText.getPreferredSize());
     inText.setBackground(Color.ORANGE);
     inText.setEditable(false);
 
@@ -76,19 +66,6 @@ public class ECSignaturePanel extends JPanel {
     passText.setAlignmentX(JTextField.LEFT_ALIGNMENT);
     passText.setMaximumSize(passText.getPreferredSize());
 
-
-
-
-
-    // genButton.addActionListener(event -> {
-    //   ECKeyPair key = new ECKeyPair(passText.getText());
-    //   console.setText(key.writePubToFile(outText.getText()));
-    //   console.append("\n" + key.writePrvToFile(passText2.getText(), outText.getText()));
-    // });
-
-    this.add(Box.createRigidArea(new Dimension(0, 10))); // Add space
-    this.add(foutButton);
-    this.add(outText);
     this.add(Box.createRigidArea(new Dimension(0, 10))); // Add space
     this.add(passLabel);
     this.add(passText);
@@ -96,7 +73,7 @@ public class ECSignaturePanel extends JPanel {
     this.add(finButton);
     this.add(Box.createRigidArea(new Dimension(0, 10))); // Add space
     this.add(inText);
-    // this.add(passText2);
+
     this.add(Box.createRigidArea(new Dimension(0, 10))); // Add space
     this.add(genButton);
     this.add(Box.createRigidArea(new Dimension(0, 10))); // Add space
