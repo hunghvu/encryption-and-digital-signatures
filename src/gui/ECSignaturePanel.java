@@ -1,84 +1,106 @@
-// package gui;
+package gui;
 
-// import javax.swing.BoxLayout;
-// import javax.swing.JButton;
-// import javax.swing.JLabel;
-// import javax.swing.JPanel;
-// import javax.swing.JScrollPane;
-// import javax.swing.JTextArea;
-// import javax.swing.UIManager;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.io.File;
 
-// public class ECSignaturePanel extends JPanel{
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 
-//   private static final JLabel LABEL_OPTION_2 = new JLabel("1. Enter passphrase.");
-//   private static final JTextArea TEXT_OPTION_2 = new JTextArea();
-//   private static final JScrollPane SCROLL_OPTION_2 = new JScrollPane(TEXT_OPTION_2);
-//   private static final JLabel LABEL_OPTION_1 = new JLabel("2. Choose a file and get its signature.");
-//   private static final JButton BUTTON_OPTION_1 = new JButton("Generate signature");
+import ec.ECKeyPair;
+import util.UtilGui;
+
+public class ECSignaturePanel extends JPanel {
+
+  /** Out path button. */
+  private static final JButton foutButton = new JButton("Select Output Path Folder");
+
+  /** A component to show the output path. */
+  private static final JTextField outText = new JTextField(UtilGui.X_AXIS - 10);
+
+  /** Passphrase request label. */
+  private static final JLabel passLabel = new JLabel("Put passphrase to generate signature here, must be the same as passphrase used to create public key:");
+
+  /** A field to type passphrase. */
+  private static final JTextField passText = new JTextField(UtilGui.X_AXIS - 10);
+
+  /** File path button. */
+  private static final JButton finButton = new JButton("Select File Input");
+
+  /** A component to show the output path. */
+  private static final JTextField inText = new JTextField(UtilGui.X_AXIS - 10);
+
+  /** Generate button. */
+  private static final JButton genButton = new JButton("Generate signature file");
+
+  /**
+   * Construct new panel for signature.
+   */
+  public ECSignaturePanel(JTextArea console) {
+    super();
+    setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+    initialize(console); // Set up components
+    setVisible(true);
+  }
+
+  /**
+   * Add components and their functionalities for the panel
+   */
+  private void initialize(JTextArea console) {
+
+    foutButton.setAlignmentX(JButton.LEFT_ALIGNMENT);
+    foutButton.addActionListener(event -> {
+      File outPath = UtilGui.pathBrowse();
+      if (outPath != null)
+        outText.setText(outPath.getPath());
+    });
+
+    outText.setAlignmentX(JTextField.LEFT_ALIGNMENT);
+    outText.setMaximumSize(outText.getPreferredSize());
+    outText.setBackground(Color.ORANGE);
+    outText.setEditable(false);
+
+    inText.setAlignmentX(JTextField.LEFT_ALIGNMENT);
+    inText.setMaximumSize(outText.getPreferredSize());
+    inText.setBackground(Color.ORANGE);
+    inText.setEditable(false);
+
+    passLabel.setAlignmentX(JLabel.LEFT_ALIGNMENT);
+
+    passText.setAlignmentX(JTextField.LEFT_ALIGNMENT);
+    passText.setMaximumSize(passText.getPreferredSize());
 
 
-//   private static final JLabel LABEL_EMPTY_3 = new JLabel(" ");
-//   private static final JLabel LABEL_OPTION_3 = new JLabel(
-//       "3. Get MAC of a chosen file. Enter MAC passphrase below (empty field is an empty passphrase)");
-//   private static final JTextArea TEXT_OPTION_3 = new JTextArea();
-//   private static final JScrollPane SCROLL_OPTION_3 = new JScrollPane(TEXT_OPTION_3);
-//   private static final JButton BUTTON_OPTION_3 = new JButton("MAC - file");
 
-//   private static final JLabel LABEL_EMPTY_4 = new JLabel(" ");
 
-//   public ECSignaturePanel(JTextArea console) {
-//     this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-//     TEXT_OPTION_2.setLineWrap(true);
-//     TEXT_OPTION_3.setLineWrap(true);
 
-//     try {
-//       UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-//     } catch (Exception e) {
-//       System.out.println(e);
-//     }
+    // genButton.addActionListener(event -> {
+    //   ECKeyPair key = new ECKeyPair(passText.getText());
+    //   console.setText(key.writePubToFile(outText.getText()));
+    //   console.append("\n" + key.writePrvToFile(passText2.getText(), outText.getText()));
+    // });
 
-//     addButtonBehavior(console);
+    this.add(Box.createRigidArea(new Dimension(0, 10))); // Add space
+    this.add(foutButton);
+    this.add(outText);
+    this.add(Box.createRigidArea(new Dimension(0, 10))); // Add space
+    this.add(passLabel);
+    this.add(passText);
+    this.add(Box.createRigidArea(new Dimension(0, 10))); // Add space
+    this.add(finButton);
+    this.add(Box.createRigidArea(new Dimension(0, 10))); // Add space
+    this.add(inText);
+    // this.add(passText2);
+    this.add(Box.createRigidArea(new Dimension(0, 10))); // Add space
+    this.add(genButton);
+    this.add(Box.createRigidArea(new Dimension(0, 10))); // Add space
 
-//     this.add(LABEL);
+  }
 
-//     this.add(LABEL_EMPTY_1);
-//     this.add(LABEL_OPTION_1);
-//     this.add(BUTTON_OPTION_1);
-
-//     this.add(LABEL_EMPTY_2);
-//     this.add(LABEL_OPTION_2);
-//     this.add(SCROLL_OPTION_2);
-//     this.add(BUTTON_OPTION_2);
-
-//     this.add(LABEL_EMPTY_3);
-//     this.add(LABEL_OPTION_3);
-//     this.add(SCROLL_OPTION_3);
-//     this.add(BUTTON_OPTION_3);
-
-//     this.add(LABEL_EMPTY_4);
-
-//     this.setVisible(true);
-
-//   }
-
-//   private void addButtonBehavior(JTextArea console) {
-//     BUTTON_OPTION_1.addActionListener(event -> {
-//       final File directory = UtilGui.actionBrowse();
-//       String outval = directory == null ? "Error: You must chose a file!"
-//           : "SHA3 of your file is: " + KCrypt.get_sha3_file(directory);
-//       console.setText(outval);
-//     });
-//     BUTTON_OPTION_2.addActionListener(event -> {
-//       final String m = TEXT_OPTION_2.getText();
-//       console.setText("SHA3 of your text input is: " + KCrypt.get_sha3_text(m));
-//     });
-//     BUTTON_OPTION_3.addActionListener(event -> {
-//       final File directory = UtilGui.actionBrowse();
-//       String passphrase = TEXT_OPTION_3.getText();
-//       String outval = directory == null ? "Error: You must chose a file!"
-//           : "MAC of your file is: " + KCrypt.get_mac_file(directory, passphrase);
-//       console.setText(outval);
-
-//     });
-//   }
-// }
+}
