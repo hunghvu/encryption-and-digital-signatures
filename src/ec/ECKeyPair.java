@@ -102,7 +102,7 @@ public class ECKeyPair {
      */
     public String writePubToFile(String outPath) {
     	outPath += File.separator + "PublicKey";
-    	String result = UtilMethods.writeBytesToFile(V.toByteArray(), outPath);
+    	String result = UtilMethods.writeObjectToFile(V, outPath); // Serialize this way so we can recover object
     	if (result.equals("")) {
     		return "Public key file has been written to " + outPath;
     	} else {

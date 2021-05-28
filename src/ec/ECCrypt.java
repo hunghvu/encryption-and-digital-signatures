@@ -128,8 +128,7 @@ public class ECCrypt {
 			ECSignature signature = (ECSignature) signatureStream.readObject();
 
 			ObjectInputStream publicKeyStream = new ObjectInputStream(new ByteArrayInputStream(publicKeyBytes));
-			ECKeyPair publicKey = (ECKeyPair) publicKeyStream.readObject();
-			ECPoint v = publicKey.getPublicKey();
+			ECPoint v = (ECPoint) publicKeyStream.readObject();
 			isValid = verify_signature_result(m, signature, v);
 
 			signatureStream.close();
@@ -154,10 +153,9 @@ public class ECCrypt {
 		// System.out.println(inputFilePath);
 		String outputFolderPath = inputFilePath + ".sign";
 		ECSignature signature = ECCrypt.get_signature(UtilMethods.readFileBytes(inputFilePath), pass);
-		byte[] signatureBytes = UtilMethods.concat(signature.get_h(), signature.get_z().toByteArray());
-		String result = UtilMethods.writeBytesToFile(signatureBytes, outputFolderPath);
+		String result = UtilMethods.writeObjectToFile(signature, outputFolderPath);
 		if (result.equals("")) {
-			return "Signature file has been written to " + inputFilePath;
+			return "Signature file has been written to " + outputFolderPath;
 		} else {
 			return result;
 		}

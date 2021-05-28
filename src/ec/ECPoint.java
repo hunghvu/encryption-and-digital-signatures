@@ -1,10 +1,11 @@
 package ec;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Arrays;
 
-public class ECPoint {
-
+public class ECPoint implements Serializable{
+    private static final long serialVersionUID = 1L;
 	/** The neutral element of the curve. */
     public static final ECPoint ZERO = new ECPoint(BigInteger.ZERO, BigInteger.ONE);
 	/** The quantity d in the equation of E_521. */

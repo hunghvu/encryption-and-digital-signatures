@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 
 /**
  * Provide utility methods
@@ -87,7 +88,27 @@ public class UtilMethods {
         }
         return "";
     }
-    
+
+    /**
+     * Write object into a file.
+     * @param toWrite object used to write to file
+     * @param filePath path of destination file
+     */
+    public static String writeObjectToFile(Object toWrite, String filePath) {
+        try {
+            FileOutputStream outFile = new FileOutputStream(filePath);
+            ObjectOutputStream objectOut = new ObjectOutputStream(outFile);
+            objectOut.writeObject(toWrite);
+            outFile.close();
+            objectOut.close();
+        } catch (FileNotFoundException e) {
+            return "Unable to locate file from path: " + filePath + ", is the URL correct?";
+        } catch (IOException iox) {
+            // return "Error occurred while writing output to file.";
+            iox.printStackTrace();
+        }
+        return "";
+    }
     
     /************************************************************
 	 *                       Hex Stuff 				            *

@@ -1,9 +1,11 @@
 package ec;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 
 // This is stored in (*.sign) file.
-public class ECSignature {
+public class ECSignature implements Serializable {
+  private static final long serialVersionUID = 2L;
   private byte[] h;
   private BigInteger z;
 
