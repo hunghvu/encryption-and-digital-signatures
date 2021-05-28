@@ -104,8 +104,8 @@ public class UtilMethods {
         } catch (FileNotFoundException e) {
             return "Unable to locate file from path: " + filePath + ", is the URL correct?";
         } catch (IOException iox) {
-            // return "Error occurred while writing output to file.";
-            iox.printStackTrace();
+            return "Error occurred while writing output to file.";
+            // iox.printStackTrace();
         }
         return "";
     }

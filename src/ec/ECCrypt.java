@@ -1,13 +1,11 @@
 package ec;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.math.BigInteger;
 import java.util.Arrays;
 
-import jdk.jshell.execution.Util;
 import kmac.Sha3;
 import util.DecryptionData;
 import util.UtilMethods;
@@ -106,7 +104,9 @@ public class ECCrypt {
 		ECPoint u = (ECKeyPair.G.multiply(signature.get_z())) // z*G
 				.add(v.multiply(new BigInteger(signature.get_h()))); // h*V
 		// accept if, and only if, KMACXOF256(U x , m, 512, "T") = h
-		return Sha3.KMACXOF256(u.getX().toByteArray(), m, 512, "T").equals(signature.get_h()) ? true : false;
+		System.out.println(UtilMethods.bytesToHex(Sha3.KMACXOF256(u.getX().toByteArray(), m, 512, "T")));
+		System.out.println(UtilMethods.bytesToHex(signature.get_h()));
+		return Arrays.equals(Sha3.KMACXOF256(u.getX().toByteArray(), m, 512, "T"), signature.get_h()) ? true : false;
 	}
 	
 
