@@ -1,6 +1,9 @@
 package ec;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.math.BigInteger;
 import java.util.Arrays;
 
@@ -98,14 +101,49 @@ public class ECCrypt {
 
 	// Verifying a signature (h, z) for a byte array m under the (Schnorr/ECDHIES)
 	// public key V:
-	private static boolean verify_signature(byte[] m, ECSignature signature, ECPoint v) {
+	private static boolean verify_signature_result(byte[] m, ECSignature signature, ECPoint v) {
 		// U <- z*G + h*V
 		ECPoint u = (ECKeyPair.G.multiply(signature.get_z())) // z*G
 				.add(v.multiply(new BigInteger(signature.get_h()))); // h*V
 		// accept if, and only if, KMACXOF256(U x , m, 512, "T") = h
 		return Sha3.KMACXOF256(u.getX().toByteArray(), m, 512, "T").equals(signature.get_h()) ? true : false;
 	}
+	
 
+	/**
+	 * Read files and verify signature.
+	 * 
+	 * @param toVerifyPath path of a file to be verified
+	 * @param signaturePath path of a signature file
+	 * @param publicKeyPath path of a public key file
+	 * @return
+	 */
+	public static String verify_signature(String toVerifyPath, String signaturePath, String publicKeyPath) {
+		byte[] m = UtilMethods.readFileBytes(toVerifyPath);
+		byte[] signatureBytes = UtilMethods.readFileBytes(signaturePath);
+		byte[] publicKeyBytes = UtilMethods.readFileBytes(publicKeyPath);
+		boolean isValid = true;
+		try {
+			ObjectInputStream signatureStream = new ObjectInputStream(new ByteArrayInputStream(signatureBytes));
+			ECSignature signature = (ECSignature) signatureStream.readObject();
+
+			ObjectInputStream publicKeyStream = new ObjectInputStream(new ByteArrayInputStream(publicKeyBytes));
+			ECKeyPair publicKey = (ECKeyPair) publicKeyStream.readObject();
+			ECPoint v = publicKey.getPublicKey();
+			isValid = verify_signature_result(m, signature, v);
+
+			signatureStream.close();
+			publicKeyStream.close();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return isValid ? "Signature is valid." : "Invalid signature";
+	}
 	/**
 	 * Sign a file under the provided password, then writes it the same folder as input file.
 	 * 

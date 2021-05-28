@@ -100,6 +100,10 @@ public class ECSignaturePanel extends JPanel {
         publicKeyPathText.setText(inPath.getPath());
     });
 
+    verifyButton.addActionListener(event -> {
+      console.setText(ECCrypt.verify_signature(toBeVerifiedPathText.getText(), signaturePathText.getText(), publicKeyPathText.getText()));
+    });
+
     inText.setAlignmentX(JTextField.LEFT_ALIGNMENT);
     inText.setMaximumSize(inText.getPreferredSize());
     inText.setBackground(Color.ORANGE);
