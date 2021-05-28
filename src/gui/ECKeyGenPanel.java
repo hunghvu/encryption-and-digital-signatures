@@ -1,13 +1,8 @@
 package gui;
 
-import kmac.KCrypt;
-import util.UtilGui;
-
-
-import java.io.File;
 import java.awt.Color;
 import java.awt.Dimension;
-
+import java.io.File;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -19,12 +14,10 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import ec.ECKeyPair;
-
-import java.io.IOException;
-import java.io.Serializable;
+import util.UtilGui;
 
 
-public class ECKeyGenPanel extends JPanel implements Serializable {
+public class ECKeyGenPanel extends JPanel {
 
     /** Out path button. */
     private static final JButton foutButton = new JButton("Select Output Path Folder");

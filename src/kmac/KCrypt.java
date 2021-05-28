@@ -1,20 +1,15 @@
 package kmac;
 
 
-import util.DecryptionData;
-import util.UtilMethods;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.nio.file.Files;
 import java.security.SecureRandom;
 import java.util.Arrays;
-import java.util.HashMap;
 
-import ec.ECPoint;
+import util.DecryptionData;
+import util.UtilMethods;
 
 public class KCrypt {
 

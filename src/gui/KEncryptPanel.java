@@ -1,13 +1,9 @@
 package gui;
 
-import kmac.KCrypt;
-import util.UtilGui;
-
-
-import java.io.File;
 import java.awt.Color;
 import java.awt.Dimension;
-
+import java.io.File;
+import java.io.IOException;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -16,11 +12,12 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import java.io.IOException;
-import java.io.Serializable;
+
+import kmac.KCrypt;
+import util.UtilGui;
 
 
-public class KEncryptPanel extends JPanel implements Serializable {
+public class KEncryptPanel extends JPanel {
 
     /** Input file button. */
     private static final JButton finButton = new JButton("Select the file that you want to encrypt");

@@ -9,7 +9,7 @@ import javax.swing.JFileChooser;
 public class UtilGui {
 	
 	/** Static X-axis value. */
-	public static final int X_AXIS = 800;
+	public static final int X_AXIS = 900;
 	
 	/** Static Y-axis value. */
 	public static final int Y_AXIS = 600;

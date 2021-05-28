@@ -1,9 +1,6 @@
 package gui; /**
  * This class represents panel for part 1 of the project.
  */
-import kmac.KCrypt;
-import util.UtilGui;
-
 import java.io.File;
 
 import javax.swing.BoxLayout;

@@ -23,7 +23,7 @@ public class MainGui {
         TABBED_PANE.addTab("EC Key Gen",new ECKeyGenPanel(PanelConsole.getConsoleElement()));
         TABBED_PANE.addTab("EC Encryption", new JPanel() /* Change this panel to a proper one */);       
         TABBED_PANE.addTab("EC Decryption",new ECDecryptPanel(PanelConsole.getConsoleElement()));
-        TABBED_PANE.addTab("EC Signature", new JPanel() /* Change this panel to a proper one */);
+        TABBED_PANE.addTab("EC Signature", new ECSignaturePanel(PanelConsole.getConsoleElement()) /* Change this panel to a proper one */);
 
 
         SwingUtilities.invokeLater(new Runnable() {

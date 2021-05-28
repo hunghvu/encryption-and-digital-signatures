@@ -1,84 +1,159 @@
-// package gui;
+package gui;
 
-// import javax.swing.BoxLayout;
-// import javax.swing.JButton;
-// import javax.swing.JLabel;
-// import javax.swing.JPanel;
-// import javax.swing.JScrollPane;
-// import javax.swing.JTextArea;
-// import javax.swing.UIManager;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.io.File;
 
-// public class ECSignaturePanel extends JPanel{
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 
-//   private static final JLabel LABEL_OPTION_2 = new JLabel("1. Enter passphrase.");
-//   private static final JTextArea TEXT_OPTION_2 = new JTextArea();
-//   private static final JScrollPane SCROLL_OPTION_2 = new JScrollPane(TEXT_OPTION_2);
-//   private static final JLabel LABEL_OPTION_1 = new JLabel("2. Choose a file and get its signature.");
-//   private static final JButton BUTTON_OPTION_1 = new JButton("Generate signature");
+import ec.ECCrypt;
+import util.UtilGui;
+
+public class ECSignaturePanel extends JPanel {
+  /** Option 1 label */
+  private static final JLabel optionOne = new JLabel("1. Generate a signature from a given file.");
+
+  /** Passphrase request label. */
+  private static final JLabel passLabel = new JLabel(
+      "Put passphrase to generate signature here, must be the same as passphrase used to create public key:");
+
+  /** A field to type passphrase. */
+  private static final JTextField passText = new JTextField(UtilGui.X_AXIS - 10);
+
+  /** File path button. */
+  private static final JButton finButton = new JButton("Select File Input");
+
+  /** A component to show the output path. */
+  private static final JTextField inText = new JTextField(UtilGui.X_AXIS - 10);
+
+  /** Generate signature button. */
+  private static final JButton genButton = new JButton("Generate signature file");
+
+  /** Option 2 label */
+  private static final JLabel optionTwo = new JLabel("2. Verify signature");
+  /** To-be-verified file path button. */
+  private static final JButton toBeVerifiedButton = new JButton("Select To-be-verified File");
+
+  /** A component to show the to-be-verified file path. */
+  private static final JTextField toBeVerifiedPathText = new JTextField(UtilGui.X_AXIS - 10);
+  /** Signature file path button. */
+  private static final JButton signatureButton = new JButton("Select Signature File Input");
+
+  /** Signature path Text. */
+  private static final JTextField signaturePathText = new JTextField(UtilGui.X_AXIS - 10);
+
+  /** Signature file path button. */
+  private static final JButton publicKeyButton = new JButton("Select Public Key File Input");
+
+  /** Signature path Text. */
+  private static final JTextField publicKeyPathText = new JTextField(UtilGui.X_AXIS - 10);
 
 
-//   private static final JLabel LABEL_EMPTY_3 = new JLabel(" ");
-//   private static final JLabel LABEL_OPTION_3 = new JLabel(
-//       "3. Get MAC of a chosen file. Enter MAC passphrase below (empty field is an empty passphrase)");
-//   private static final JTextArea TEXT_OPTION_3 = new JTextArea();
-//   private static final JScrollPane SCROLL_OPTION_3 = new JScrollPane(TEXT_OPTION_3);
-//   private static final JButton BUTTON_OPTION_3 = new JButton("MAC - file");
+  /** Verify signature button. */
+  private static final JButton verifyButton = new JButton("Verify file");
 
-//   private static final JLabel LABEL_EMPTY_4 = new JLabel(" ");
+  /**
+   * Construct new panel for signature.
+   */
+  public ECSignaturePanel(JTextArea console) {
+    super();
+    setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+    initialize(console); // Set up components
+    setVisible(true);
+  }
 
-//   public ECSignaturePanel(JTextArea console) {
-//     this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-//     TEXT_OPTION_2.setLineWrap(true);
-//     TEXT_OPTION_3.setLineWrap(true);
+  /**
+   * Add components and their functionalities for the panel
+   */
+  private void initialize(JTextArea console) {
 
-//     try {
-//       UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-//     } catch (Exception e) {
-//       System.out.println(e);
-//     }
+    finButton.addActionListener(event -> {
+      File inPath = UtilGui.actionBrowse();
+      if (inPath != null)
+        inText.setText(inPath.getPath());
+    });
+    genButton.addActionListener(event -> {
+      console.setText(ECCrypt.writeSignatureToFile(passText.getText(), inText.getText()));
+    });
 
-//     addButtonBehavior(console);
+    toBeVerifiedButton.addActionListener(event -> {
+      File inPath = UtilGui.actionBrowse();
+      if (inPath != null)
+        toBeVerifiedPathText.setText(inPath.getPath());
+    });
 
-//     this.add(LABEL);
+    signatureButton.addActionListener(event -> {
+      File inPath = UtilGui.actionBrowse();
+      if (inPath != null)
+        signaturePathText.setText(inPath.getPath());
+    });
 
-//     this.add(LABEL_EMPTY_1);
-//     this.add(LABEL_OPTION_1);
-//     this.add(BUTTON_OPTION_1);
+    publicKeyButton.addActionListener(event -> {
+      File inPath = UtilGui.actionBrowse();
+      if (inPath != null)
+        publicKeyPathText.setText(inPath.getPath());
+    });
 
-//     this.add(LABEL_EMPTY_2);
-//     this.add(LABEL_OPTION_2);
-//     this.add(SCROLL_OPTION_2);
-//     this.add(BUTTON_OPTION_2);
+    verifyButton.addActionListener(event -> {
+      console.setText(ECCrypt.verify_signature(toBeVerifiedPathText.getText(), signaturePathText.getText(), publicKeyPathText.getText()));
+    });
 
-//     this.add(LABEL_EMPTY_3);
-//     this.add(LABEL_OPTION_3);
-//     this.add(SCROLL_OPTION_3);
-//     this.add(BUTTON_OPTION_3);
+    inText.setAlignmentX(JTextField.LEFT_ALIGNMENT);
+    inText.setMaximumSize(inText.getPreferredSize());
+    inText.setBackground(Color.ORANGE);
+    inText.setEditable(false);
 
-//     this.add(LABEL_EMPTY_4);
+    passLabel.setAlignmentX(JLabel.LEFT_ALIGNMENT);
 
-//     this.setVisible(true);
+    passText.setAlignmentX(JTextField.LEFT_ALIGNMENT);
+    passText.setMaximumSize(passText.getPreferredSize());
 
-//   }
+    toBeVerifiedPathText.setAlignmentX(JTextField.LEFT_ALIGNMENT);
+    toBeVerifiedPathText.setMaximumSize(toBeVerifiedPathText.getPreferredSize());
+    toBeVerifiedPathText.setBackground(Color.ORANGE);
+    toBeVerifiedPathText.setEditable(false);
 
-//   private void addButtonBehavior(JTextArea console) {
-//     BUTTON_OPTION_1.addActionListener(event -> {
-//       final File directory = UtilGui.actionBrowse();
-//       String outval = directory == null ? "Error: You must chose a file!"
-//           : "SHA3 of your file is: " + KCrypt.get_sha3_file(directory);
-//       console.setText(outval);
-//     });
-//     BUTTON_OPTION_2.addActionListener(event -> {
-//       final String m = TEXT_OPTION_2.getText();
-//       console.setText("SHA3 of your text input is: " + KCrypt.get_sha3_text(m));
-//     });
-//     BUTTON_OPTION_3.addActionListener(event -> {
-//       final File directory = UtilGui.actionBrowse();
-//       String passphrase = TEXT_OPTION_3.getText();
-//       String outval = directory == null ? "Error: You must chose a file!"
-//           : "MAC of your file is: " + KCrypt.get_mac_file(directory, passphrase);
-//       console.setText(outval);
+    signaturePathText.setAlignmentX(JTextField.LEFT_ALIGNMENT);
+    signaturePathText.setMaximumSize(signaturePathText.getPreferredSize());
+    signaturePathText.setBackground(Color.ORANGE);
+    signaturePathText.setEditable(false);
 
-//     });
-//   }
-// }
+    publicKeyPathText.setAlignmentX(JTextField.LEFT_ALIGNMENT);
+    publicKeyPathText.setMaximumSize(publicKeyPathText.getPreferredSize());
+    publicKeyPathText.setBackground(Color.ORANGE);
+    publicKeyPathText.setEditable(false);
+
+    this.add(Box.createRigidArea(new Dimension(0, 10))); // Add space
+    this.add(optionOne);
+    this.add(passLabel);
+    this.add(passText);
+    this.add(Box.createRigidArea(new Dimension(0, 10))); // Add space
+    this.add(finButton);
+    this.add(Box.createRigidArea(new Dimension(0, 10))); // Add space
+    this.add(inText);
+
+    this.add(Box.createRigidArea(new Dimension(0, 10))); // Add space
+    this.add(genButton);
+    this.add(Box.createRigidArea(new Dimension(0, 30))); // Add space
+    
+    this.add(optionTwo);
+    this.add(toBeVerifiedButton);
+    this.add(toBeVerifiedPathText);
+    this.add(Box.createRigidArea(new Dimension(0, 10))); // Add space
+    this.add(signatureButton);
+    this.add(signaturePathText);
+    this.add(Box.createRigidArea(new Dimension(0, 10))); // Add space
+    this.add(publicKeyButton);
+    this.add(publicKeyPathText);
+    this.add(verifyButton);
+
+
+  }
+
+}
