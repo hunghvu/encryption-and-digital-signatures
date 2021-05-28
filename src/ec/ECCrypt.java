@@ -1,8 +1,12 @@
 package ec;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.math.BigInteger;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -38,27 +42,17 @@ public class ECCrypt {
 		}
 	}
 
-//
-//	public static String encryptFile(String inFile, String pass, String outFile) throws IOException {
-//
-//		outFile = outFile + ".ECcript";
-//
-//		// Read bytes from a file
-//		byte[] msg = UtilMethods.readFileBytes(inFile);
-//
-//		// Convert passphrase to byte array
-//		byte[] pw = (pass != null && pass.length() > 0) ? pass.getBytes() : new byte[0];
-//
-//		byte[] enc = encrypt(msg, pw);
-//
-//		String result = UtilMethods.writeBytesToFile(enc, outFile);
-//
-//		if (result.equals("")) {
-//			return "Your file has been encrypted to " + outFile;
-//		} else {
-//			return result;
-//		}
-//	}
+	public static String encryptFile(byte[] message, ECPoint V, String outFile) throws IOException {
+
+		byte[] myEncrypt = encrypt(message, V);
+
+		// Read bytes from a file
+		String encryptResult = UtilMethods.writeBytesToFile(myEncrypt,outFile);
+
+		// Convert passphrase to byte array
+			return "Your file has been encrypted to " + outFile;
+	}
+
 
 		/**
          * Decrypting a symmetric cryptogram under a secret key with
@@ -95,26 +89,26 @@ public class ECCrypt {
 
 	/**
 	 * Encrypting a byte m under the Schorr/ECDHIES public key V.
-	 * @param message Byte m.
-	 * @param enc
-	 * @param k
-	 * @param V
-	 * @return
+	 * @param message Message byte array.
+	 * @param V Public Key V
+	 * @return The encrypted data.
 	 * @throws IOException
 	 */
-	public static byte[] encrypt(byte[] message, byte[] enc, BigInteger k, ECPoint V) throws IOException {
+	public static byte[] encrypt(byte[] message, ECPoint V) throws IOException {
 		// k <-- Random(512)
 		SecureRandom rand = new SecureRandom();
 		byte[] key = new byte[64]; // 64 * 8 = 512
 		rand.nextBytes(key);
+		BigInteger k = new BigInteger(key);
 
 		// W -> k*V; Z -> k*G
 		ECPoint W = V.multiply(k);
-		ECPoint Z = ECPoint.toECPoint(Arrays.copyOfRange(enc, 0, ECPoint.BAL)).multiply(k);
+
+		//V.multiply(k);
+		ECPoint Z = ECKeyPair.G.multiply(k);
 
 		// (ke || ka) = KMACXOF256(W_x, "", 1024, "P")
 		byte[] ke_ka = Sha3.KMACXOF256(W.getX().toByteArray(), new byte[] {}, 1024, "P");
-
 		byte[] ke = Arrays.copyOfRange(ke_ka, 0, 64);
 
 		// c = KMACXOF256(ke, "", |m|, "PKE") XOR m
@@ -124,9 +118,6 @@ public class ECCrypt {
 
 		// t = KMACXOF256(ka, m, 512, "PKA")
 		byte[] t = Sha3.KMACXOF256(ka, message, 512, "PKA");
-
-
-
 
 		// symmetric cryptogram: (Z, c, t)
 		ByteArrayOutputStream symCryptogram = new ByteArrayOutputStream();
