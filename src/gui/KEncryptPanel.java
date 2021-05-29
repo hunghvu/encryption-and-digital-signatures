@@ -1,3 +1,7 @@
+/**
+ * This provides a panel for KMAC encryption functionality of the application
+ * @author Duy Nguyen
+ */
 package gui;
 
 import java.awt.Color;
@@ -15,7 +19,6 @@ import javax.swing.JTextField;
 
 import kmac.KCrypt;
 import util.UtilGui;
-
 
 public class KEncryptPanel extends JPanel {
 
@@ -43,7 +46,7 @@ public class KEncryptPanel extends JPanel {
     /**
      * Construct new panel for decryption scheme based on KMACXOF256.
      */
-    public KEncryptPanel (JTextArea console) {
+    public KEncryptPanel(JTextArea console) {
         super();
         setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
         initialize(console); // Set up components
@@ -56,8 +59,9 @@ public class KEncryptPanel extends JPanel {
     private void initialize(JTextArea console) {
         finButton.setAlignmentX(JButton.LEFT_ALIGNMENT);
         finButton.addActionListener(event -> {
-            File inPath = UtilGui.actionBrowse();
-            if (inPath != null) inText.setText(inPath.getPath());
+            File inPath = UtilGui.fileBrowse();
+            if (inPath != null)
+                inText.setText(inPath.getPath());
         });
 
         inText.setAlignmentX(JTextField.LEFT_ALIGNMENT);
@@ -68,7 +72,8 @@ public class KEncryptPanel extends JPanel {
         foutButton.setAlignmentX(JButton.LEFT_ALIGNMENT);
         foutButton.addActionListener(event -> {
             File outPath = UtilGui.pathBrowse();
-            if (outPath != null) outText.setText(outPath.getPath());
+            if (outPath != null)
+                outText.setText(outPath.getPath());
         });
 
         outText.setAlignmentX(JTextField.LEFT_ALIGNMENT);
@@ -90,23 +95,18 @@ public class KEncryptPanel extends JPanel {
             }
         });
 
-
-
         this.add(finButton);
         this.add(inText);
-        this.add(Box.createRigidArea(new Dimension(0,10))); // Add space
+        this.add(Box.createRigidArea(new Dimension(0, 10))); // Add space
         this.add(foutButton);
         this.add(outText);
-        this.add(Box.createRigidArea(new Dimension(0,10))); // Add space
+        this.add(Box.createRigidArea(new Dimension(0, 10))); // Add space
         this.add(passLabel);
         this.add(passText);
-        this.add(Box.createRigidArea(new Dimension(0,10))); // Add space
+        this.add(Box.createRigidArea(new Dimension(0, 10))); // Add space
         this.add(encryptButton);
-        this.add(Box.createRigidArea(new Dimension(0,10))); // Add space
+        this.add(Box.createRigidArea(new Dimension(0, 10))); // Add space
 
     }
 
 }
-
-
-

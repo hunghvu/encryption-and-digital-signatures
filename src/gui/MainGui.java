@@ -1,4 +1,11 @@
-package gui;// A simple GUI to retrieve a File
+/**
+ * This provides a laucher for a GUI of an application
+ * @author Hung Vu
+ * @author Phong Le
+ * @author Duy Nguyen
+ */
+package gui;
+
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
@@ -17,14 +24,14 @@ public class MainGui {
 
     public static void main(String[] args) {
 
-        TABBED_PANE.addTab("KMAC Hashing",new PanelPartOne(PanelConsole.getConsoleElement()));     
+        TABBED_PANE.addTab("KMAC Hashing", new KHashingPanel(PanelConsole.getConsoleElement()));
         TABBED_PANE.addTab("KMAC Encrypt", new KEncryptPanel(PanelConsole.getConsoleElement()));
-        TABBED_PANE.addTab("KMAC Decrypt",new KDecryptPanel(PanelConsole.getConsoleElement()));
-        TABBED_PANE.addTab("EC Key Gen",new ECKeyGenPanel(PanelConsole.getConsoleElement()));
+        TABBED_PANE.addTab("KMAC Decrypt", new KDecryptPanel(PanelConsole.getConsoleElement()));
+        TABBED_PANE.addTab("EC Key Gen", new ECKeyGenPanel(PanelConsole.getConsoleElement()));
         TABBED_PANE.addTab("EC Encryption", new ECEncryptPanel(PanelConsole.getConsoleElement()));
-        TABBED_PANE.addTab("EC Decryption",new ECDecryptPanel(PanelConsole.getConsoleElement()));
-        TABBED_PANE.addTab("EC Signature", new ECSignaturePanel(PanelConsole.getConsoleElement()) /* Change this panel to a proper one */);
-
+        TABBED_PANE.addTab("EC Decryption", new ECDecryptPanel(PanelConsole.getConsoleElement()));
+        TABBED_PANE.addTab("EC Signature",
+                new ECSignaturePanel(PanelConsole.getConsoleElement()) /* Change this panel to a proper one */);
 
         SwingUtilities.invokeLater(new Runnable() {
             @Override
@@ -35,44 +42,44 @@ public class MainGui {
                     @Override
                     public void windowActivated(WindowEvent e) {
                         // TODO Auto-generated method stub
-                        
+
                     }
 
                     @Override
                     public void windowClosed(WindowEvent e) {
                         // TODO Auto-generated method stub
-                        
+
                     }
 
                     @Override
                     public void windowClosing(WindowEvent e) {
                         frame.dispose();
                         System.exit(0);
-                        
+
                     }
 
                     @Override
                     public void windowDeactivated(WindowEvent e) {
                         // TODO Auto-generated method stub
-                        
+
                     }
 
                     @Override
                     public void windowDeiconified(WindowEvent e) {
                         // TODO Auto-generated method stub
-                        
+
                     }
 
                     @Override
                     public void windowIconified(WindowEvent e) {
                         // TODO Auto-generated method stub
-                        
+
                     }
 
                     @Override
                     public void windowOpened(WindowEvent e) {
                         // TODO Auto-generated method stub
-                        
+
                     }
                 });
                 frame.setSize(UtilGui.X_AXIS, UtilGui.Y_AXIS);
@@ -80,7 +87,7 @@ public class MainGui {
                 frame.add(PANEL_CONSOLE);
                 frame.setVisible(true);
             }
-        });       
+        });
     }
 
 }

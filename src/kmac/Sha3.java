@@ -1,5 +1,15 @@
-package kmac;
+/**
+ * SHA3 implementation, adapted from version created by: 
+ * @author Markku-Juhani O. Saarinen <mjos@iki.fi> - https://github.com/mjosaarinen/tiny_sha3
+ * @author Paulo Barreto - Code presented during office hour, a translation from C to Java
+ * 
+ * Translated by
+ * @author Phong Le
+ * @author Hung Vu
+ * @author Duy Nguyen
+ */
 
+package kmac;
 
 import util.UtilMethods;
 
@@ -7,11 +17,6 @@ import java.math.BigInteger;
 
 import java.util.Arrays;
 
-/**
- * SHA3 implementation, adapted from version created by: 
- * Markku-Juhani O. Saarinen <mjos@iki.fi> - https://github.com/mjosaarinen/tiny_sha3
- * Paulo Barreto - Code preseted during office hour
- */
 public class Sha3 {
 
   public byte[] st = new byte[200]; // st->q
@@ -30,10 +35,9 @@ public class Sha3 {
       39, 61, 20, 44 };
   private static final int[] keccakf_piln = { 10, 7, 11, 17, 18, 3, 5, 16, 8, 21, 24, 4, 15, 23, 19, 13, 12, 2, 20, 14,
       22, 9, 6, 1 };
-  
-  private static final byte[] right_encode_0 = {(byte)0x00, (byte)0x01}; // right_encode(0)
-  private static final byte[] left_encode_0 = {(byte)0x01, (byte)0x00}; // left_encode(0)
 
+  private static final byte[] right_encode_0 = { (byte) 0x00, (byte) 0x01 }; // right_encode(0)
+  private static final byte[] left_encode_0 = { (byte) 0x01, (byte) 0x00 }; // left_encode(0)
 
   public Sha3() {
 
@@ -122,10 +126,9 @@ public class Sha3 {
     }
 
   }
-  
-  
+
   /************************************************************
-   *                       Keccak 				              *
+   * Keccak *
    ************************************************************/
 
   /**
@@ -181,7 +184,7 @@ public class Sha3 {
    * 
    * @param in    input data
    * @param inlen given byte length
-   * @param md output buffer
+   * @param md    output buffer
    * @param mdlen hash output in bytes
    */
   void Keccak(byte[] in, int inlen, byte[] md, int mdlen) {
@@ -189,10 +192,9 @@ public class Sha3 {
     sha3_update(in, inlen);
     sha3_final(md);
   }
-  
-  
+
   /************************************************************
-   *                       SHAKE 				              *
+   * SHAKE *
    ************************************************************/
 
   /**
@@ -210,7 +212,7 @@ public class Sha3 {
   void shake256_init() {
     sha3_init(32);
   }
-  
+
   public void shake_xof() {
     st[pt] ^= (byte) 0x1F;
     st[this.rsiz - 1] ^= (byte) 0x80;
@@ -229,202 +231,208 @@ public class Sha3 {
     }
     pt = j;
   }
-  
-  
+
   /************************************************************
-   *                       C-SHAKE 				              *
+   * C-SHAKE *
    ************************************************************/
-  
+
   /**
-   * Initialize the context for cSHAKE256 
-   * @param N 	 function name
-   * @param S	 custom string
+   * Initialize the context for cSHAKE256
+   * 
+   * @param N function name
+   * @param S custom string
    */
   void cShake256_init(String N, String S) {
-	shake256_init();
-	if (!N.equals("") || !S.equals("")) {
-		byte[] prefix = bytepad(UtilMethods.concat(encode_string(N.getBytes()), encode_string(S.getBytes())), 136);
-		sha3_update(prefix, prefix.length);
-	}
+    shake256_init();
+    if (!N.equals("") || !S.equals("")) {
+      byte[] prefix = bytepad(UtilMethods.concat(encode_string(N.getBytes()), encode_string(S.getBytes())), 136);
+      sha3_update(prefix, prefix.length);
+    }
   }
-  
+
   public void cShake_xof() {
-	    st[pt] ^= (byte) 0x04;
-	    st[this.rsiz - 1] ^= (byte) 0x80;
-	    sha3_keccakf(st);
-	    this.pt = 0;
+    st[pt] ^= (byte) 0x04;
+    st[this.rsiz - 1] ^= (byte) 0x80;
+    sha3_keccakf(st);
+    this.pt = 0;
   }
-  
+
   /**
-   * Compute the streamlined cSHAKE256 on input X with output bitlength L, function name N, and custom string S 
-   * @param X    input data
-   * @param L 	 desired output length in bits
-   * @param N 	 function name
-   * @param S	 custom string
-   * @return 	 disgest
+   * Compute the streamlined cSHAKE256 on input X with output bitlength L,
+   * function name N, and custom string S
+   * 
+   * @param X input data
+   * @param L desired output length in bits
+   * @param N function name
+   * @param S custom string
+   * @return disgest
    */
   static byte[] cShake256(byte[] X, int L, String N, String S) {
-	byte[] out = new byte[L >>> 3];
-	Sha3 sha3 = new Sha3();
-	
-	sha3.cShake256_init(N, S);
-	
-	sha3.sha3_update(X, X.length);
-	sha3.cShake_xof();
-	sha3.shake_out(out, L >>> 3);
-	
-	return out;
+    byte[] out = new byte[L >>> 3];
+    Sha3 sha3 = new Sha3();
+
+    sha3.cShake256_init(N, S);
+
+    sha3.sha3_update(X, X.length);
+    sha3.cShake_xof();
+    sha3.shake_out(out, L >>> 3);
+
+    return out;
   }
 
   /************************************************************
-   *                       KMAC 				              *
+   * KMAC *
    ************************************************************/
   /**
    * Initialize the context for KMACXOF256
-   * @param K     the key
-   * @param S     custom string
+   * 
+   * @param K the key
+   * @param S custom string
    */
   void KMACXOF256_init(byte[] K, String S) {
-	  byte[] newK = bytepad(encode_string(K), 136);
-	  cShake256_init("KMAC", S);
-	  sha3_update(newK, newK.length);
+    byte[] newK = bytepad(encode_string(K), 136);
+    cShake256_init("KMAC", S);
+    sha3_update(newK, newK.length);
   }
-  
+
   public void KMACXOF256_xof() {
-	  	sha3_update(right_encode_0, right_encode_0.length);
-	    st[pt] ^= (byte) 0x04;
-	    st[this.rsiz - 1] ^= (byte) 0x80;
-	    sha3_keccakf(st);
-	    this.pt = 0;
-}
-  
+    sha3_update(right_encode_0, right_encode_0.length);
+    st[pt] ^= (byte) 0x04;
+    st[this.rsiz - 1] ^= (byte) 0x80;
+    sha3_keccakf(st);
+    this.pt = 0;
+  }
+
   /**
-   * Compute the streamlined KMACXOF256 with key K on input X, with output length L and custom string S
-   * @param K	 the key
-   * @param X    input data
-   * @param L 	 desired output length in bits
-   * @param S	 custom string
-   * @return 	 disgest
+   * Compute the streamlined KMACXOF256 with key K on input X, with output length
+   * L and custom string S
+   * 
+   * @param K the key
+   * @param X input data
+   * @param L desired output length in bits
+   * @param S custom string
+   * @return disgest
    */
   public static byte[] KMACXOF256(byte[] K, byte[] X, int L, String S) {
-	byte[] out = new byte[L >>> 3];
-	Sha3 sha3 = new Sha3();
-	
-	sha3.KMACXOF256_init(K, S);
-	
-	sha3.sha3_update(X, X.length);
-	
-	
-	sha3.KMACXOF256_xof();
-	sha3.shake_out(out, L >>> 3);
-	
-	return out;
+    byte[] out = new byte[L >>> 3];
+    Sha3 sha3 = new Sha3();
+
+    sha3.KMACXOF256_init(K, S);
+
+    sha3.sha3_update(X, X.length);
+
+    sha3.KMACXOF256_xof();
+    sha3.shake_out(out, L >>> 3);
+
+    return out;
   }
-  
-  
+
   /************************************************************
-   *                    Auxiliary Methods                     *
-   ************************************************************/ 
+   * Auxiliary Methods *
+   ************************************************************/
   private static byte[] encode_string(byte[] S) {
-	  // Validity Conditions: 0 ≤ len(S) < 2^2040
-	  int slen = (S != null) ? S.length : 0;
-	  byte[] lenS = (S != null) ? left_encode(slen << 3) : left_encode_0; // NB: bitlength, not bytelength
-	  byte[] encS = new byte[lenS.length + slen];
-	  System.arraycopy(lenS, 0, encS, 0, lenS.length);
-	  System.arraycopy((S != null) ? S : encS, 0, encS, lenS.length, slen);
-	  return encS; // left_encode(len(S)) || S.
+    // Validity Conditions: 0 ≤ len(S) < 2^2040
+    int slen = (S != null) ? S.length : 0;
+    byte[] lenS = (S != null) ? left_encode(slen << 3) : left_encode_0; // NB: bitlength, not bytelength
+    byte[] encS = new byte[lenS.length + slen];
+    System.arraycopy(lenS, 0, encS, 0, lenS.length);
+    System.arraycopy((S != null) ? S : encS, 0, encS, lenS.length, slen);
+    return encS; // left_encode(len(S)) || S.
   }
-  
+
   /**
    * Pads a byte string
+   * 
    * @param X the input string to pad
    * @param w the desired factor of the padding
-   * @return a byte array prepended by left_encode(w) such that it's length is a multiple of w
-  */
+   * @return a byte array prepended by left_encode(w) such that it's length is a
+   *         multiple of w
+   */
   private static byte[] bytepad(byte[] X, int w) {
 
-      byte[] z = left_encode(w);
+    byte[] z = left_encode(w);
 
-      // Make sure the output byte string has length in bytes
-      // is a multiple of w
-      int len = z.length + X.length;
-      while ((len % w) != 0) {
-         len += 1;
-      }
-      // Append the byte string to the encoded integer
-      byte[] out = Arrays.copyOf(z, len);
-      System.arraycopy(X, 0, out, z.length, X.length);
+    // Make sure the output byte string has length in bytes
+    // is a multiple of w
+    int len = z.length + X.length;
+    while ((len % w) != 0) {
+      len += 1;
+    }
+    // Append the byte string to the encoded integer
+    byte[] out = Arrays.copyOf(z, len);
+    System.arraycopy(X, 0, out, z.length, X.length);
 
-      return out;
+    return out;
   }
 
   /**
-   * left_encode(x) encodes the integer x as a byte string in a way that can be unambiguously parsed
-   * from the beginning of the string by inserting the length of the byte string before the byte string
-   * representation of x.
+   * left_encode(x) encodes the integer x as a byte string in a way that can be
+   * unambiguously parsed from the beginning of the string by inserting the length
+   * of the byte string before the byte string representation of x.
    * 
    * Validity Conditions: 0 <= x < 2^2040
    * 
-   * More explanation: 
+   * More explanation:
    * https://crypto.stackexchange.com/questions/75269/sha3-the-left-right-encode-functions
    * https://cryptologie.net/article/388/shake-cshake-and-some-more-bit-ordering/
    * 
    * @param x an arbitrary large integer with validity Conditions: 0 <= x < 2^2040
    */
-  private static byte[] left_encode(int x){
-	// Validity Conditions: 0 ≤ x < 2^2040
-      // 1. Let n be the smallest positive integer for which 2^(8*n) > x.
-      int n = 1;
-      while ((1 << (8*n)) <= x) {
-          n++;
-      }
-      if (n >= 256) {
-          throw new RuntimeException("Left encoding overflow for length " + n);
-      }
-      // 2. Let x1, x2, ..., xn be the base-256 encoding of x satisfying:
-      //    x = Σ 2^(8*(n-i))*x_i, for i = 1 to n.
-      // 3. Let Oi = enc8(xi), for i = 1 to n.
-      byte[] val = new byte[n + 1];
-      for (int i = n; i > 0; i--) {
-          val[i] = (byte)(x & 0xFF);
-          x >>>= 8;
-      }
-      // 4. Let O0 = enc8(n).
-      val[0] = (byte)n;
-      // 5. Return O = O0 || O1 || …|| On−1 || On.
-      return val;
+  private static byte[] left_encode(int x) {
+    // Validity Conditions: 0 ≤ x < 2^2040
+    // 1. Let n be the smallest positive integer for which 2^(8*n) > x.
+    int n = 1;
+    while ((1 << (8 * n)) <= x) {
+      n++;
+    }
+    if (n >= 256) {
+      throw new RuntimeException("Left encoding overflow for length " + n);
+    }
+    // 2. Let x1, x2, ..., xn be the base-256 encoding of x satisfying:
+    // x = Σ 2^(8*(n-i))*x_i, for i = 1 to n.
+    // 3. Let Oi = enc8(xi), for i = 1 to n.
+    byte[] val = new byte[n + 1];
+    for (int i = n; i > 0; i--) {
+      val[i] = (byte) (x & 0xFF);
+      x >>>= 8;
+    }
+    // 4. Let O0 = enc8(n).
+    val[0] = (byte) n;
+    // 5. Return O = O0 || O1 || …|| On−1 || On.
+    return val;
   }
 
   /**
-   * right_encode(x) encodes the integer x as a byte string in a way that can be unambiguously parsed
-   * from the end of the string by inserting the length of the byte string after the byte string
-  *  representation of x.
+   * right_encode(x) encodes the integer x as a byte string in a way that can be
+   * unambiguously parsed from the end of the string by inserting the length of
+   * the byte string after the byte string representation of x.
    * 
    * Validity Conditions: 0 <= x < 2^2040
    * 
-   * More explanation: 
+   * More explanation:
    * https://crypto.stackexchange.com/questions/75269/sha3-the-left-right-encode-functions
    * https://cryptologie.net/article/388/shake-cshake-and-some-more-bit-ordering/
    * 
    * @param
    */
-  private static byte[] right_encode(int c){
+  private static byte[] right_encode(int c) {
     BigInteger x = BigInteger.valueOf(c);
     // 1. Let n be the smallest positive integer for which 2^8n > x
     int n = (int) Math.ceil(Double.valueOf(x.bitLength()) / 8);
     // 2. Let x_1, x_2,…, x_n be the base-256 encoding of x satisfying:
-    //    x = sum(2^8(n-i) * x_i), for i = 1 to n
+    // x = sum(2^8(n-i) * x_i), for i = 1 to n
     // 3. Let O_i = enc8(xi), for i = 1 to n
-    // Side note: 2^2040 is around 615 digits => around 19680 bits (enough for byte array)
+    // Side note: 2^2040 is around 615 digits => around 19680 bits (enough for byte
+    // array)
     byte[] xArray = x.toByteArray();
     byte[] xReversedArray = new byte[xArray.length + 1];
     int j = 0;
     for (int i = xArray.length - 1; i >= 0; i--) {
       xReversedArray[j] = xArray[i];
-      j ++;
+      j++;
     }
     // Reverse bits
-    for (int i = 1; i < xReversedArray.length; i++){
+    for (int i = 1; i < xReversedArray.length; i++) {
       int reversedInt = Integer.reverse((int) xReversedArray[i] << 24); // int is 4 bytes, so shift 24 after reversal
       xReversedArray[i] = (byte) reversedInt;
     }
@@ -433,5 +441,5 @@ public class Sha3 {
     // 5. Return O = O_1 || O_2 || … || O_n || O_n+1
     return xReversedArray;
   }
-  
+
 }
