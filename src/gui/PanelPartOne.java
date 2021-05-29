@@ -74,7 +74,7 @@ public class PanelPartOne extends JPanel {
 
   private void addButtonBehavior(JTextArea console) {
     BUTTON_OPTION_1.addActionListener(event -> {
-      final File directory = UtilGui.actionBrowse();
+      final File directory = UtilGui.fileBrowse();
       String outval = directory == null ? "Error: You must chose a file!"
           : "SHA3 of your file is: " + KCrypt.get_sha3_file(directory);
       console.setText(outval);
@@ -84,7 +84,7 @@ public class PanelPartOne extends JPanel {
       console.setText("SHA3 of your text input is: " + KCrypt.get_sha3_text(m));
     });
     BUTTON_OPTION_3.addActionListener(event -> {
-      final File directory = UtilGui.actionBrowse();
+      final File directory = UtilGui.fileBrowse();
       String passphrase = TEXT_OPTION_3.getText();
       String outval = directory == null ? "Error: You must chose a file!"
           : "MAC of your file is: " + KCrypt.get_mac_file(directory, passphrase);

@@ -56,7 +56,7 @@ public class KDecryptPanel extends JPanel {
 	private void initialize(JTextArea console) {
 		finButton.setAlignmentX(JButton.LEFT_ALIGNMENT);
 		finButton.addActionListener(event -> {
-			File inPath = UtilGui.actionBrowse();
+			File inPath = UtilGui.fileBrowse();
 			if (inPath != null) inText.setText(inPath.getPath());
 		});
 			

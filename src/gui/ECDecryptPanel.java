@@ -115,13 +115,13 @@ public class ECDecryptPanel extends JPanel {
 		
 		finButton.setAlignmentX(JButton.LEFT_ALIGNMENT);
 		finButton.addActionListener(event -> {
-			File inPath = UtilGui.actionBrowse();
+			File inPath = UtilGui.fileBrowse();
 			if (inPath != null) inText.setText(inPath.getPath());
 		});
 		
 		sfButton.setAlignmentX(JButton.LEFT_ALIGNMENT);
 		sfButton.addActionListener(event -> {
-			File inPath = UtilGui.actionBrowse();
+			File inPath = UtilGui.fileBrowse();
 			if (inPath != null) sfText.setText(inPath.getPath());
 		});
 			

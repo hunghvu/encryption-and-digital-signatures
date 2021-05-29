@@ -74,7 +74,7 @@ public class ECSignaturePanel extends JPanel {
   private void initialize(JTextArea console) {
 
     finButton.addActionListener(event -> {
-      File inPath = UtilGui.actionBrowse();
+      File inPath = UtilGui.fileBrowse();
       if (inPath != null)
         inText.setText(inPath.getPath());
     });
@@ -83,19 +83,19 @@ public class ECSignaturePanel extends JPanel {
     });
 
     toBeVerifiedButton.addActionListener(event -> {
-      File inPath = UtilGui.actionBrowse();
+      File inPath = UtilGui.fileBrowse();
       if (inPath != null)
         toBeVerifiedPathText.setText(inPath.getPath());
     });
 
     signatureButton.addActionListener(event -> {
-      File inPath = UtilGui.actionBrowse();
+      File inPath = UtilGui.fileBrowse();
       if (inPath != null)
         signaturePathText.setText(inPath.getPath());
     });
 
     publicKeyButton.addActionListener(event -> {
-      File inPath = UtilGui.actionBrowse();
+      File inPath = UtilGui.fileBrowse();
       if (inPath != null)
         publicKeyPathText.setText(inPath.getPath());
     });

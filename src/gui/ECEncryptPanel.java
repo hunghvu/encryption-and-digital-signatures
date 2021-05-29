@@ -88,13 +88,13 @@ public class ECEncryptPanel extends JPanel{
 
         finButton.setAlignmentX(JButton.LEFT_ALIGNMENT);
         finButton.addActionListener(event -> {
-            File inPath = UtilGui.actionBrowse();
+            File inPath = UtilGui.fileBrowse();
             if (inPath != null) inText.setText(inPath.getPath());
         });
 
         pfButton.setAlignmentX(JButton.LEFT_ALIGNMENT);
         pfButton.addActionListener(event -> {
-            File inPath = UtilGui.actionBrowse();
+            File inPath = UtilGui.fileBrowse();
             if (inPath != null) pfText.setText(inPath.getPath());
         });
 
