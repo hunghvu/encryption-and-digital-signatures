@@ -46,25 +46,13 @@ public class ECEncryptPanel extends JPanel{
     private static final JTextField outText = new JTextField(UtilGui.X_AXIS - 10);
 
     /** private key file path request button. */
-    private static final JButton sfButton = new JButton("Select public Key File Path");
+    private static final JButton pfButton = new JButton("Select public Key File Path");
 
     /** A component to show the private key file path. */
-    private static final JTextField sfText = new JTextField(UtilGui.X_AXIS - 10);
+    private static final JTextField pfText = new JTextField(UtilGui.X_AXIS - 10);
 
     /** Decrypt text input prompt label. */
     private static final JLabel inLabel = new JLabel("Put decrypt text input here:");
-
-    /** Passphrase request label. */
-    private static final JLabel passLabel = new JLabel("Put passphrase for private key here:");
-
-    /** privatekey password request label. */
-    private static final JLabel passLabel2 = new JLabel("Put password for public key file here:");
-
-    /** A field to type passpharse. */
-    private static final JTextField passText = new JTextField(UtilGui.X_AXIS - 10);
-
-    /** A field to type password for private key file. */
-    private static final JTextField passText2 = new JTextField(UtilGui.X_AXIS - 10);
 
     /** Decrypt button. */
     private static final JButton decryptButton = new JButton("Encrypt");
@@ -75,10 +63,8 @@ public class ECEncryptPanel extends JPanel{
     private static final JPanel inCards = new JPanel(new CardLayout());
     private static final JPanel skCards = new JPanel(new CardLayout());
     private static final JComboBox combo1 = new JComboBox();
-    private static final JComboBox combo2 = new JComboBox();
     private final gui.ECEncryptPanel.CardPanel inCard1 = new gui.ECEncryptPanel.CardPanel("1. Encrypt a data file");
     private final gui.ECEncryptPanel.CardPanel inCard2 = new gui.ECEncryptPanel.CardPanel("2. Encrypt direct text input to the app");
-    //private final gui.ECEncryptPanel.CardPanel skCard2 = new gui.ECEncryptPanel.CardPanel("2. Get private key via passphrase");
     private final gui.ECEncryptPanel.CardPanel skCard1 = new gui.ECEncryptPanel.CardPanel("1. Get public key via file and its password");
 
 
@@ -98,8 +84,6 @@ public class ECEncryptPanel extends JPanel{
      */
     private void initialize(JTextArea console) {
 
-        passLabel.setAlignmentX(JLabel.LEFT_ALIGNMENT);
-        passLabel2.setAlignmentX(JLabel.LEFT_ALIGNMENT);
         inLabel.setAlignmentX(JLabel.LEFT_ALIGNMENT);
 
         finButton.setAlignmentX(JButton.LEFT_ALIGNMENT);
@@ -108,10 +92,10 @@ public class ECEncryptPanel extends JPanel{
             if (inPath != null) inText.setText(inPath.getPath());
         });
 
-        sfButton.setAlignmentX(JButton.LEFT_ALIGNMENT);
-        sfButton.addActionListener(event -> {
+        pfButton.setAlignmentX(JButton.LEFT_ALIGNMENT);
+        pfButton.addActionListener(event -> {
             File inPath = UtilGui.actionBrowse();
-            if (inPath != null) sfText.setText(inPath.getPath());
+            if (inPath != null) pfText.setText(inPath.getPath());
         });
 
         inText.setAlignmentX(JTextField.LEFT_ALIGNMENT);
@@ -119,10 +103,10 @@ public class ECEncryptPanel extends JPanel{
         inText.setBackground(Color.ORANGE);
         inText.setEditable(false);
 
-        sfText.setAlignmentX(JTextField.LEFT_ALIGNMENT);
-        sfText.setMaximumSize(inText.getPreferredSize());
-        sfText.setBackground(Color.YELLOW);
-        sfText.setEditable(false);
+        pfText.setAlignmentX(JTextField.LEFT_ALIGNMENT);
+        pfText.setMaximumSize(inText.getPreferredSize());
+        pfText.setBackground(Color.YELLOW);
+        pfText.setEditable(false);
 
         foutButton.addActionListener(event -> {
             File outPath = UtilGui.pathBrowse();
@@ -135,18 +119,12 @@ public class ECEncryptPanel extends JPanel{
         outText.setEditable(false);
         outText.setAlignmentX(JTextField.LEFT_ALIGNMENT);
 
-        passText.setAlignmentX(JTextField.LEFT_ALIGNMENT);
-        passText.setMaximumSize(passText.getPreferredSize());
-
-        passText2.setAlignmentX(JTextField.LEFT_ALIGNMENT);
-        passText2.setMaximumSize(passText.getPreferredSize());
-
         decryptButton.addActionListener(event -> {
             String outputPath;
             byte[] enc;
-            ECKeyPair key;
+            ECPoint key;
             if (combo1.getSelectedIndex() == 0) {
-                outputPath = UtilGui.createDecOutPath(inText.getText(), outText.getText());
+                outputPath = UtilGui.createEncOutPath(inText.getText(), outText.getText());
                 enc = UtilMethods.readFileBytes(inText.getText());
                 if (enc == null) {
                     console.setText("Error occurred while reading file.");
@@ -160,18 +138,15 @@ public class ECEncryptPanel extends JPanel{
                     return;
                 }
             }
-            if (combo2.getSelectedIndex() == 0) {
-                key = new ECKeyPair(passText.getText());
-            } else {
-                key = ECKeyPair.readPrivateKeyFile(sfText.getText(), passText2.getText());
-                if (key == null) {
-                    console.setText("Invalid key file path or password.");
-                    return;
-                }
+
+            key = ECKeyPair.readPubKeyFile(pfText.getText());
+            if (key == null) {
+                console.setText("Invalid public key file path.");
+                return;
             }
 
             try {
-                console.setText(ECCrypt.encryptFile(enc, key.getPublicKey(), outputPath));
+                console.setText(ECCrypt.encryptFile(enc, key, outputPath));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -193,17 +168,10 @@ public class ECEncryptPanel extends JPanel{
         inCard2.add(inArea);
         inCard2.add(Box.createRigidArea(new Dimension(0,10))); // Add space
 
-//            skCard1.add(Box.createRigidArea(new Dimension(0,10))); // Add space
-//            skCard1.add(passLabel);
-//            skCard1.add(passText);
-//            skCard1.add(Box.createRigidArea(new Dimension(0,10))); // Add space
-
         skCard1.add(Box.createRigidArea(new Dimension(0,10))); // Add space
-        skCard1.add(sfButton);
-        skCard1.add(sfText);
+        skCard1.add(pfButton);
+        skCard1.add(pfText);
         skCard1.add(Box.createRigidArea(new Dimension(0,10))); // Add space
-        skCard1.add(passLabel2);
-        skCard1.add(passText2);
         skCard1.add(Box.createRigidArea(new Dimension(0,10))); // Add space
 
         combo1.addItem(inCard1);
@@ -212,7 +180,6 @@ public class ECEncryptPanel extends JPanel{
         inCards.add(inCard2, inCard2.toString());
         inCards.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        combo2.addItem(skCard1);
         skCards.add(skCard1, skCard1.toString());
         //          combo2.addItem(skCard2);
         //           skCards.add(skCard2, skCard2.toString());
@@ -228,19 +195,8 @@ public class ECEncryptPanel extends JPanel{
         });
         combo1.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        combo2.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JComboBox jcb = (JComboBox) e.getSource();
-                CardLayout cl = (CardLayout) skCards.getLayout();
-                cl.show(skCards, jcb.getSelectedItem().toString());
-            }
-        });
-        combo2.setAlignmentX(Component.LEFT_ALIGNMENT);
-
         this.add(combo1);
         this.add(inCards);
-        this.add(combo2);
         this.add(skCards);
         this.add(decryptButton);
 

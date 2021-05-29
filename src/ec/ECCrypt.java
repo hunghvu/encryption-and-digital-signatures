@@ -88,7 +88,10 @@ public class ECCrypt {
 		String encryptResult = UtilMethods.writeBytesToFile(myEncrypt,outFile);
 
 		// Convert passphrase to byte array
-		return "Your file has been encrypted to " + outFile;
+		if (encryptResult.equals("")) 
+			return "Your file has been encrypted to " + outFile;
+		else
+			return encryptResult;
 	}
 
 
