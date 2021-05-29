@@ -85,16 +85,20 @@ public class ECCrypt {
 		BigInteger sBigInteger = (new BigInteger(s)).multiply(BigInteger.valueOf(4L));
 		// k <- KMACXOF256(s, m, 512, "N");
 		byte[] k = Sha3.KMACXOF256(sBigInteger.toByteArray(), m, 512, "N");
+		byte[] kBytes = new byte[65];
+        System.arraycopy(k, 0, kBytes, 1, k.length); // assure k is positive
 		// k <- 4k
-		BigInteger kBigInteger = (new BigInteger(k)).multiply(BigInteger.valueOf(4L));
+		BigInteger kBigInteger = (new BigInteger(kBytes)).multiply(BigInteger.valueOf(4L));
 		// U <- k*G
 		ECPoint u = ECKeyPair.G.multiply(kBigInteger);
 		// h <- KMACXOF256(U x , m, 512, "T");
 		byte[] h = Sha3.KMACXOF256(u.getX().toByteArray(), m, 512, "T");
+		byte[] hBytes = new byte[65];
+        System.arraycopy(h, 0,hBytes, 1, h.length); // assure h is positive
 		// z <- (k - hs) mod r
-		BigInteger hBigInteger = new BigInteger(h);
+		BigInteger hBigInteger = new BigInteger(hBytes);
 		BigInteger zBigInteger = (kBigInteger.subtract(hBigInteger.multiply(sBigInteger))).mod(ECPoint.R);
-		return new ECSignature(h, zBigInteger);
+		return new ECSignature(hBigInteger, zBigInteger);
 	}
 
 	// Verifying a signature (h, z) for a byte array m under the (Schnorr/ECDHIES)
@@ -102,11 +106,14 @@ public class ECCrypt {
 	private static boolean verify_signature_result(byte[] m, ECSignature signature, ECPoint v) {
 		// U <- z*G + h*V
 		ECPoint u = (ECKeyPair.G.multiply(signature.get_z())) // z*G
-				.add(v.multiply(new BigInteger(signature.get_h()))); // h*V
+				.add(v.multiply(signature.get_h())); // h*V
 		// accept if, and only if, KMACXOF256(U x , m, 512, "T") = h
-		System.out.println(UtilMethods.bytesToHex(Sha3.KMACXOF256(u.getX().toByteArray(), m, 512, "T")));
-		System.out.println(UtilMethods.bytesToHex(signature.get_h()));
-		return Arrays.equals(Sha3.KMACXOF256(u.getX().toByteArray(), m, 512, "T"), signature.get_h()) ? true : false;
+		byte[] temp = Sha3.KMACXOF256(u.getX().toByteArray(), m, 512, "T");
+		byte[] tempBytes = new byte[65];
+        System.arraycopy(temp, 0,tempBytes, 1, temp.length); // assuretemph is positive
+		System.out.println(UtilMethods.bytesToHex(tempBytes));
+		System.out.println(UtilMethods.bytesToHex(signature.get_h().toByteArray()));
+		return signature.get_h().equals(new BigInteger(tempBytes)) ? true : false;
 	}
 	
 
@@ -121,28 +128,14 @@ public class ECCrypt {
 	public static String verify_signature(String toVerifyPath, String signaturePath, String publicKeyPath) {
 		byte[] m = UtilMethods.readFileBytes(toVerifyPath);
 		byte[] signatureBytes = UtilMethods.readFileBytes(signaturePath);
-		byte[] publicKeyBytes = UtilMethods.readFileBytes(publicKeyPath);
 		boolean isValid = true;
-		try {
-			ObjectInputStream signatureStream = new ObjectInputStream(new ByteArrayInputStream(signatureBytes));
-			ECSignature signature = (ECSignature) signatureStream.readObject();
-
-			ObjectInputStream publicKeyStream = new ObjectInputStream(new ByteArrayInputStream(publicKeyBytes));
-			ECPoint v = (ECPoint) publicKeyStream.readObject();
-			isValid = verify_signature_result(m, signature, v);
-
-			signatureStream.close();
-			publicKeyStream.close();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		ECSignature signature = ECSignature.toECSignature(signatureBytes);
+		ECPoint v = ECKeyPair.readPubKeyFile(publicKeyPath);
+		isValid = verify_signature_result(m, signature, v);
 
 		return isValid ? "Signature is valid." : "Invalid signature";
 	}
+	
 	/**
 	 * Sign a file under the provided password, then writes it the same folder as input file.
 	 * 
@@ -152,8 +145,8 @@ public class ECCrypt {
 	public static String writeSignatureToFile(String pass, String inputFilePath) {
 		// System.out.println(inputFilePath);
 		String outputFolderPath = inputFilePath + ".sign";
-		ECSignature signature = ECCrypt.get_signature(UtilMethods.readFileBytes(inputFilePath), pass);
-		String result = UtilMethods.writeObjectToFile(signature, outputFolderPath);
+		ECSignature signature = get_signature(UtilMethods.readFileBytes(inputFilePath), pass);
+		String result = UtilMethods.writeBytesToFile(signature.toByteArray(), outputFolderPath);
 		if (result.equals("")) {
 			return "Signature file has been written to " + outputFolderPath;
 		} else {
