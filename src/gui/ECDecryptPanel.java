@@ -1,3 +1,7 @@
+/**
+ * This provides a panel for keypair generator functionality of the application
+ * @author Phong Le
+ */
 package gui;
 
 import java.awt.CardLayout;
@@ -39,10 +43,6 @@ public class ECDecryptPanel extends JPanel {
 	    }	
 	}
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -2529286463705430968L;
 
 	/** Input file button. */
 	private static final JButton finButton = new JButton("Select Encrypted File Path");

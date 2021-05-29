@@ -1,5 +1,8 @@
+/**
+ * This provides a panel for public key encryption of the application
+ * @author Duy Nguyen
+ */
 package gui;
-
 
 import ec.ECCrypt;
 import ec.ECKeyPair;
@@ -14,13 +17,12 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 
-public class ECEncryptPanel extends JPanel{
-
+public class ECEncryptPanel extends JPanel {
 
     class CardPanel extends JPanel {
         private String name;
 
-        CardPanel(String name){
+        CardPanel(String name) {
             super();
             this.name = name;
             setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
@@ -31,7 +33,6 @@ public class ECEncryptPanel extends JPanel{
             return name;
         }
     }
-
 
     /** Input file button. */
     private static final JButton finButton = new JButton("Select Encrypted File Path");
@@ -64,10 +65,10 @@ public class ECEncryptPanel extends JPanel{
     private static final JPanel skCards = new JPanel(new CardLayout());
     private static final JComboBox combo1 = new JComboBox();
     private final gui.ECEncryptPanel.CardPanel inCard1 = new gui.ECEncryptPanel.CardPanel("1. Encrypt a data file");
-    private final gui.ECEncryptPanel.CardPanel inCard2 = new gui.ECEncryptPanel.CardPanel("2. Encrypt direct text input to the app");
-    private final gui.ECEncryptPanel.CardPanel skCard1 = new gui.ECEncryptPanel.CardPanel("1. Get public key via file and its password");
-
-
+    private final gui.ECEncryptPanel.CardPanel inCard2 = new gui.ECEncryptPanel.CardPanel(
+            "2. Encrypt direct text input to the app");
+    private final gui.ECEncryptPanel.CardPanel skCard1 = new gui.ECEncryptPanel.CardPanel(
+            "1. Get public key via file and its password");
 
     /**
      * Construct new panel for decryption scheme based on KMACXOF256.
@@ -89,13 +90,15 @@ public class ECEncryptPanel extends JPanel{
         finButton.setAlignmentX(JButton.LEFT_ALIGNMENT);
         finButton.addActionListener(event -> {
             File inPath = UtilGui.fileBrowse();
-            if (inPath != null) inText.setText(inPath.getPath());
+            if (inPath != null)
+                inText.setText(inPath.getPath());
         });
 
         pfButton.setAlignmentX(JButton.LEFT_ALIGNMENT);
         pfButton.addActionListener(event -> {
             File inPath = UtilGui.fileBrowse();
-            if (inPath != null) pfText.setText(inPath.getPath());
+            if (inPath != null)
+                pfText.setText(inPath.getPath());
         });
 
         inText.setAlignmentX(JTextField.LEFT_ALIGNMENT);
@@ -110,7 +113,8 @@ public class ECEncryptPanel extends JPanel{
 
         foutButton.addActionListener(event -> {
             File outPath = UtilGui.pathBrowse();
-            if (outPath != null) outText.setText(outPath.getPath());
+            if (outPath != null)
+                outText.setText(outPath.getPath());
         });
         foutButton.setAlignmentX(JButton.LEFT_ALIGNMENT);
 
@@ -134,7 +138,8 @@ public class ECEncryptPanel extends JPanel{
                 outputPath = outText.getText() + "\\ECDecrypted";
                 enc = UtilMethods.hexToBytes(inArea.getText());
                 if (enc == null) {
-                    console.setText("Invalid text input. Please make sure its length is even, and it does not have any invalid hex character.");
+                    console.setText(
+                            "Invalid text input. Please make sure its length is even, and it does not have any invalid hex character.");
                     return;
                 }
             }
@@ -156,23 +161,23 @@ public class ECEncryptPanel extends JPanel{
 
         this.add(foutButton);
         this.add(outText);
-        this.add(Box.createRigidArea(new Dimension(0,10))); // Add space
+        this.add(Box.createRigidArea(new Dimension(0, 10))); // Add space
 
         inCard1.add(finButton);
         inCard1.add(inText);
-        inCard1.add(Box.createRigidArea(new Dimension(0,10))); // Add space
-        inCard1.add(Box.createRigidArea(new Dimension(0,10))); // Add space
+        inCard1.add(Box.createRigidArea(new Dimension(0, 10))); // Add space
+        inCard1.add(Box.createRigidArea(new Dimension(0, 10))); // Add space
 
         inCard2.add(inLabel);
-        inCard2.add(Box.createRigidArea(new Dimension(0,10))); // Add space
+        inCard2.add(Box.createRigidArea(new Dimension(0, 10))); // Add space
         inCard2.add(inArea);
-        inCard2.add(Box.createRigidArea(new Dimension(0,10))); // Add space
+        inCard2.add(Box.createRigidArea(new Dimension(0, 10))); // Add space
 
-        skCard1.add(Box.createRigidArea(new Dimension(0,10))); // Add space
+        skCard1.add(Box.createRigidArea(new Dimension(0, 10))); // Add space
         skCard1.add(pfButton);
         skCard1.add(pfText);
-        skCard1.add(Box.createRigidArea(new Dimension(0,10))); // Add space
-        skCard1.add(Box.createRigidArea(new Dimension(0,10))); // Add space
+        skCard1.add(Box.createRigidArea(new Dimension(0, 10))); // Add space
+        skCard1.add(Box.createRigidArea(new Dimension(0, 10))); // Add space
 
         combo1.addItem(inCard1);
         inCards.add(inCard1, inCard1.toString());
@@ -181,8 +186,8 @@ public class ECEncryptPanel extends JPanel{
         inCards.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         skCards.add(skCard1, skCard1.toString());
-        //          combo2.addItem(skCard2);
-        //           skCards.add(skCard2, skCard2.toString());
+        // combo2.addItem(skCard2);
+        // skCards.add(skCard2, skCard2.toString());
         skCards.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         combo1.addActionListener(new ActionListener() {
@@ -203,5 +208,3 @@ public class ECEncryptPanel extends JPanel{
     }
 
 }
-
-

@@ -1,6 +1,9 @@
-package gui; /**
- * This class represents panel for part 1 of the project.
+/**
+ * This provides a panel for hashing-related functionality of the application
+ * @author Hung Vu
  */
+package gui;
+
 import java.io.File;
 
 import javax.swing.BoxLayout;
@@ -14,7 +17,7 @@ import javax.swing.UIManager;
 import kmac.KCrypt;
 import util.UtilGui;
 
-public class PanelPartOne extends JPanel {
+public class KHashingPanel extends JPanel {
   private static final JLabel LABEL = new JLabel("Choose one of 3 options below.");
 
   private static final JLabel LABEL_EMPTY_1 = new JLabel(" ");
@@ -37,7 +40,7 @@ public class PanelPartOne extends JPanel {
 
   private static final JLabel LABEL_EMPTY_4 = new JLabel(" ");
 
-  public PanelPartOne(JTextArea console) {
+  public KHashingPanel(JTextArea console) {
     this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
     TEXT_OPTION_2.setLineWrap(true);
     TEXT_OPTION_3.setLineWrap(true);
@@ -72,6 +75,9 @@ public class PanelPartOne extends JPanel {
 
   }
 
+  /**
+   * A helper method to add listener to components
+   */
   private void addButtonBehavior(JTextArea console) {
     BUTTON_OPTION_1.addActionListener(event -> {
       final File directory = UtilGui.fileBrowse();

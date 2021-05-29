@@ -1,3 +1,8 @@
+/**
+ * This provides a panel for signature functionality of the application
+ * @author Hung Vu
+ * @author Phong Le
+ */
 package gui;
 
 import java.awt.Color;
@@ -54,7 +59,6 @@ public class ECSignaturePanel extends JPanel {
   /** Signature path Text. */
   private static final JTextField publicKeyPathText = new JTextField(UtilGui.X_AXIS - 10);
 
-
   /** Verify signature button. */
   private static final JButton verifyButton = new JButton("Verify file");
 
@@ -101,7 +105,8 @@ public class ECSignaturePanel extends JPanel {
     });
 
     verifyButton.addActionListener(event -> {
-      console.setText(ECCrypt.verify_signature(toBeVerifiedPathText.getText(), signaturePathText.getText(), publicKeyPathText.getText()));
+      console.setText(ECCrypt.verify_signature(toBeVerifiedPathText.getText(), signaturePathText.getText(),
+          publicKeyPathText.getText()));
     });
 
     inText.setAlignmentX(JTextField.LEFT_ALIGNMENT);
@@ -141,7 +146,7 @@ public class ECSignaturePanel extends JPanel {
     this.add(Box.createRigidArea(new Dimension(0, 10))); // Add space
     this.add(genButton);
     this.add(Box.createRigidArea(new Dimension(0, 30))); // Add space
-    
+
     this.add(optionTwo);
     this.add(toBeVerifiedButton);
     this.add(toBeVerifiedPathText);
@@ -152,7 +157,6 @@ public class ECSignaturePanel extends JPanel {
     this.add(publicKeyButton);
     this.add(publicKeyPathText);
     this.add(verifyButton);
-
 
   }
 
