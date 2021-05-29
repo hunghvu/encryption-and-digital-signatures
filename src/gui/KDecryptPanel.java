@@ -22,7 +22,6 @@ import util.UtilGui;
 
 public class KDecryptPanel extends JPanel {
 
-
 	/** Input file button. */
 	private static final JButton finButton = new JButton("Select Encrypted File Path");
 

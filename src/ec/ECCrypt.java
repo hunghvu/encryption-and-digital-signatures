@@ -1,9 +1,14 @@
+/**
+ * This provides method to let elliptic-curve-related UI interact with 
+ * back end (elliptic curve - ec), like an interface
+ * @author Phong Le
+ * @author Hung Vu
+ * @author Duy Nguyen
+ */
 package ec;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.Arrays;
@@ -79,27 +84,35 @@ public class ECCrypt {
 		return new DecryptionData(m, Arrays.equals(t, t_prime));
 	}
 
+	/**
+	 * Encrypt a file using elliptic curve cryptography
+	 * 
+	 * @param message an input message
+	 * @param V       a public key
+	 * @param outFile an output file
+	 * @return a string displays result of an encryption process
+	 * @throws IOException
+	 */
 	public static String encryptFile(byte[] message, ECPoint V, String outFile) throws IOException {
 
 		outFile = outFile + ".ECcript";
 		byte[] myEncrypt = encrypt(message, V);
 
 		// Read bytes from a file
-		String encryptResult = UtilMethods.writeBytesToFile(myEncrypt,outFile);
+		String encryptResult = UtilMethods.writeBytesToFile(myEncrypt, outFile);
 
 		// Convert passphrase to byte array
-		if (encryptResult.equals("")) 
+		if (encryptResult.equals(""))
 			return "Your file has been encrypted to " + outFile;
 		else
 			return encryptResult;
 	}
 
-
-
 	/**
 	 * Encrypting a byte m under the Schorr/ECDHIES public key V.
+	 * 
 	 * @param message Message byte array.
-	 * @param V Public Key V
+	 * @param V       Public Key V
 	 * @return The encrypted data.
 	 * @throws IOException
 	 */
@@ -113,7 +126,7 @@ public class ECCrypt {
 		// W -> k*V; Z -> k*G
 		ECPoint W = V.multiply(k);
 
-		//V.multiply(k);
+		// V.multiply(k);
 		ECPoint Z = ECKeyPair.G.multiply(k);
 
 		// (ke || ka) = KMACXOF256(W_x, "", 1024, "P")
@@ -136,8 +149,13 @@ public class ECCrypt {
 		return symCryptogram.toByteArray();
 	}
 
-
-	// Generating a signature for a byte array m under passphrase pw:
+	/**
+	 * Generating a signature for a byte array m under passphrase pw:
+	 * 
+	 * @param m          a byte array of a given file
+	 * @param passphrase a given passphrase
+	 * @return a signature
+	 */
 	private static ECSignature get_signature(byte[] m, String passphrase) {
 		// s <- KMACXOF256(pw, "", 512, "K")
 		byte[] s = Sha3.KMACXOF256(passphrase.getBytes(), "".getBytes(), 512, "K");
@@ -146,7 +164,7 @@ public class ECCrypt {
 		// k <- KMACXOF256(s, m, 512, "N");
 		byte[] k = Sha3.KMACXOF256(sBigInteger.toByteArray(), m, 512, "N");
 		byte[] kBytes = new byte[65];
-        System.arraycopy(k, 0, kBytes, 1, k.length); // assure k is positive
+		System.arraycopy(k, 0, kBytes, 1, k.length); // assure k is positive
 		// k <- 4k
 		BigInteger kBigInteger = (new BigInteger(kBytes)).multiply(BigInteger.valueOf(4L));
 		// U <- k*G
@@ -154,15 +172,22 @@ public class ECCrypt {
 		// h <- KMACXOF256(U x , m, 512, "T");
 		byte[] h = Sha3.KMACXOF256(u.getX().toByteArray(), m, 512, "T");
 		byte[] hBytes = new byte[65];
-        System.arraycopy(h, 0,hBytes, 1, h.length); // assure h is positive
+		System.arraycopy(h, 0, hBytes, 1, h.length); // assure h is positive
 		// z <- (k - hs) mod r
 		BigInteger hBigInteger = new BigInteger(hBytes);
 		BigInteger zBigInteger = (kBigInteger.subtract(hBigInteger.multiply(sBigInteger))).mod(ECPoint.R);
 		return new ECSignature(hBigInteger, zBigInteger);
 	}
 
-	// Verifying a signature (h, z) for a byte array m under the (Schnorr/ECDHIES)
-	// public key V:
+	/**
+	 * Verifying a signature (h, z) for a byte array m under the (Schnorr/ECDHIES)
+	 * public key V
+	 * 
+	 * @param m         a given file
+	 * @param signature a given signature
+	 * @param v         a public key
+	 * @return true if a signature is valid, false otherwise
+	 */
 	private static boolean verify_signature_result(byte[] m, ECSignature signature, ECPoint v) {
 		// U <- z*G + h*V
 		ECPoint u = (ECKeyPair.G.multiply(signature.get_z())) // z*G
@@ -170,17 +195,16 @@ public class ECCrypt {
 		// accept if, and only if, KMACXOF256(U x , m, 512, "T") = h
 		byte[] temp = Sha3.KMACXOF256(u.getX().toByteArray(), m, 512, "T");
 		byte[] tempBytes = new byte[65];
-        System.arraycopy(temp, 0,tempBytes, 1, temp.length); // assuretemph is positive
+		System.arraycopy(temp, 0, tempBytes, 1, temp.length); // assuretemph is positive
 		System.out.println(UtilMethods.bytesToHex(tempBytes));
 		System.out.println(UtilMethods.bytesToHex(signature.get_h().toByteArray()));
 		return signature.get_h().equals(new BigInteger(tempBytes)) ? true : false;
 	}
-	
 
 	/**
 	 * Read files and verify signature.
 	 * 
-	 * @param toVerifyPath path of a file to be verified
+	 * @param toVerifyPath  path of a file to be verified
 	 * @param signaturePath path of a signature file
 	 * @param publicKeyPath path of a public key file
 	 * @return
@@ -195,11 +219,12 @@ public class ECCrypt {
 
 		return isValid ? "Signature is valid." : "Invalid signature";
 	}
-	
+
 	/**
-	 * Sign a file under the provided password, then writes it the same folder as input file.
+	 * Sign a file under the provided password, then writes it the same folder as
+	 * input file.
 	 * 
-	 * @param pass passphrase
+	 * @param pass          passphrase
 	 * @param inputFilePath input file path
 	 */
 	public static String writeSignatureToFile(String pass, String inputFilePath) {
