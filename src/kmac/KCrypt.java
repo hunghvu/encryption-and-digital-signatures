@@ -1,5 +1,12 @@
-package kmac;
+/**
+ * This provides method to let KMAC-UI interact with 
+ * back end (KMAC/SHA3 implementation), like an interface
+ * @author Phong Le
+ * @author Hung Vu
+ * @author Duy Nguyen
+ */
 
+package kmac;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -13,27 +20,45 @@ import util.UtilMethods;
 
 public class KCrypt {
 
+	/**
+	 * This method encrypts a given file based on given passphrase and save the
+	 * output to a given path. This uses KMACXOF256
+	 * 
+	 * @param inFile  a given file
+	 * @param pass    a passphrase
+	 * @param outFile an output path
+	 * @return a string telling user a result
+	 * @throws IOException
+	 */
 	public static String encryptFile(String inFile, String pass, String outFile) throws IOException {
-		
+
 		outFile = outFile + ".cript";
-		
+
 		// Read bytes from a file
 		byte[] msg = UtilMethods.readFileBytes(inFile);
 
 		// Convert passphrase to byte array
 		byte[] pw = (pass != null && pass.length() > 0) ? pass.getBytes() : new byte[0];
-		
+
 		byte[] enc = encrypt(msg, pw);
 
 		String result = UtilMethods.writeBytesToFile(enc, outFile);
-		
+
 		if (result.equals("")) {
 			return "Your file has been encrypted to " + outFile;
 		} else {
 			return result;
-		}	
+		}
 	}
 
+	/**
+	 * KMACXOF256 encryption mechanism
+	 * 
+	 * @param message a message
+	 * @param pwd     a passphrase
+	 * @return a byte array of encrypted message
+	 * @throws IOException
+	 */
 	public static byte[] encrypt(byte[] message, byte[] pwd) throws IOException {
 		// z <-- Random(512)
 		SecureRandom rand = new SecureRandom();
@@ -70,15 +95,16 @@ public class KCrypt {
 
 		// Read byte array from file.
 		byte[] enc = UtilMethods.readFileBytes(inFile);
-		if (enc == null) return "Error occurred while reading file.";
+		if (enc == null)
+			return "Error occurred while reading file.";
 
 		// Convert passphrase string to byte array.
 		byte[] pw = (pass != null && pass.length() > 0) ? pass.getBytes() : new byte[0];
 
 		// Decrypt with file and passphrase byte array.
 		DecryptionData dec = decrypt(enc, pw);
-		
-		String result = UtilMethods.writeBytesToFile(enc, outFile);	
+
+		String result = UtilMethods.writeBytesToFile(enc, outFile);
 		if (result.equals("")) {
 			// Respond base on the validity of decrypted data.
 			if (dec.isValid()) {
@@ -122,7 +148,12 @@ public class KCrypt {
 		return new DecryptionData(m, Arrays.equals(t, t_prime));
 	}
 
-	// Return SHA3 in hex string of a file
+	/**
+	 * This provides a SHA3 of given file
+	 * 
+	 * @param directory a given file
+	 * @return SHA3 of given file in hex string format
+	 */
 	public static String get_sha3_file(File directory) {
 		StringBuilder sb = new StringBuilder();
 		try {
@@ -139,7 +170,12 @@ public class KCrypt {
 		return sb.toString();
 	}
 
-	// Return SHA3 in hex string of a given text input
+	/**
+	 * This provides SHA3 of given text input
+	 * 
+	 * @param m a text input
+	 * @return SHA3 of text input in hex string format
+	 */
 	public static String get_sha3_text(String m) {
 		byte[] data = m.getBytes();
 		int length = 512;
@@ -148,7 +184,13 @@ public class KCrypt {
 		return UtilMethods.bytesToHex(outval);
 	}
 
-	// Return MAC of a given file in hex string
+	/**
+	 * This provides MAC of given file using a passphrase
+	 * 
+	 * @param directory  a given file
+	 * @param passphrase a given passphrase
+	 * @return MAC of given file in hex string
+	 */
 	public static String get_mac_file(File directory, String passphrase) {
 		StringBuilder sb = new StringBuilder();
 		try {
@@ -164,5 +206,4 @@ public class KCrypt {
 		}
 		return sb.toString();
 	}
-
 }

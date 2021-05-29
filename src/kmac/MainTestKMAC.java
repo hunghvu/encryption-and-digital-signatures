@@ -1,8 +1,15 @@
-package kmac; /**
+/**
  * Test code for Sha3.java, adapted from version created by:
- * Markku-Juhani O. Saarinen <mjos@iki.fi> - https://github.com/mjosaarinen/tiny_sha3
- * Paulo Barreto - Code preseted during office hour
+ * @author Markku-Juhani O. Saarinen <mjos@iki.fi> - https://github.com/mjosaarinen/tiny_sha3
+ * 
+ * Translated by
+ * @author Phong Le
+ * @author Hung Vu
+ * @author Duy Nguyen
  */
+
+package kmac;
+
 import java.util.Arrays;
 
 public class MainTestKMAC {
@@ -13,14 +20,17 @@ public class MainTestKMAC {
   static byte[] ref;
   static byte[] key;
 
-  // We will decompose the project, and bring them into their respective folder
-  // later on (modularize).
   public static void main(String args[]) {
-    
     if (test_sha3() == 0 && test_shake() == 0 && test_cshake256() == 0 && test_kmacxof256() == 0)
       System.out.println("FIPS 202 / SHA3, SHAKE128, SHAKE256, cSHAKE256, KMACXOF256 Self-Tests OK!\n");
   }
 
+  /**
+   * A support method to translate hex string to a byte array
+   * 
+   * @param ch a hex character
+   * @return -1 if fail, byte length if success
+   */
   public static int test_hexdigit(char ch) {
     if (ch >= '0' && ch <= '9')
       return ch - '0';
@@ -31,6 +41,11 @@ public class MainTestKMAC {
     return -1;
   }
 
+  /**
+   * Read hex input into a byte representation
+   * 
+   * @return length of byte array if success, -1 if fail
+   */
   public static int test_readhex(byte[] buf, final char[] str, int maxbytes) {
     int i, h, l;
 
@@ -51,8 +66,11 @@ public class MainTestKMAC {
     return i;
   }
 
-  // returns zero on success, nonzero + stderr messages on failure
-
+  /**
+   * Test method for SHA3
+   * 
+   * @return zero on success, nonzero + stderr messages on failure
+   */
   public static int test_sha3() {
     // message / digest pairs, lifted from ShortMsgKAT_SHA3-xxx.txt files
     // in the official package: https://github.com/gvanas/KeccakCodePackage
@@ -104,8 +122,11 @@ public class MainTestKMAC {
     return fails;
   }
 
-  // test for SHAKE128 and SHAKE256
-
+  /**
+   * Test method for SHAKE128 and SHAKE256
+   * 
+   * @return zero on success, nonzero + stderr messages on failure
+   */
   public static int test_shake() {
     // Test vectors have bytes 480..511 of XOF output for given inputs.
     // From http://csrc.nist.gov/groups/ST/toolkit/examples.html#aHashing
@@ -167,22 +188,27 @@ public class MainTestKMAC {
     return fails;
   }
 
-  // Test cSHAKE256
+  /**
+   * Test method for cSHAKE256
+   * 
+   * @return zero on success, nonzero + stderr messages on failure
+   */
   public static int test_cshake256() {
     // Test vectors from
     // https://csrc.nist.gov/CSRC/media/Projects/Cryptographic-Standards-and-Guidelines/documents/examples/cSHAKE_samples.pdf
     int fails = 0;
     final String testvec[][] = { { // Test sample #3
-            "00010203", // Data X
-            "4", // Length L - 32 bits = 4 bytes, hard-coded msg_len
-            "", // N - empty
-            "Email Signature", // S - character string
-            "D008828E2B80AC9D2218FFEE1D070C48B8E4C87BFF32C9699D5B6896EEE0EDD164020E2BE0560858D9C00C037E34A96937C561A74C412BB4C746469527281C8C" // Output
+        "00010203", // Data X
+        "4", // Length L - 32 bits = 4 bytes, hard-coded msg_len
+        "", // N - empty
+        "Email Signature", // S - character string
+        "D008828E2B80AC9D2218FFEE1D070C48B8E4C87BFF32C9699D5B6896EEE0EDD164020E2BE0560858D9C00C037E34A96937C561A74C412BB4C746469527281C8C" // Output
         }, { // Test sample #4
             "000102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F202122232425262728292A2B2C2D2E2F303"
                 + "132333435363738393A3B3C3D3E3F404142434445464748494A4B4C4D4E4F505152535455565758595A5B5C5D5E5F606162"
                 + "636465666768696A6B6C6D6E6F707172737475767778797A7B7C7D7E7F808182838485868788898A8B8C8D8E8F909192939"
-                + "495969798999A9B9C9D9E9FA0A1A2A3A4A5A6A7A8A9AAABACADAEAFB0B1B2B3B4B5B6B7B8B9BABBBCBDBEBFC0C1C2C3C4C5C6C7", // Data X
+                + "495969798999A9B9C9D9E9FA0A1A2A3A4A5A6A7A8A9AAABACADAEAFB0B1B2B3B4B5B6B7B8B9BABBBCBDBEBFC0C1C2C3C4C5C6C7", // Data
+                                                                                                                             // X
             "200", // Length L - 1600 bits = 200 bytes, hard-coded msg_len
             "", // N -empty
             "Email Signature", // S - character string
@@ -190,67 +216,67 @@ public class MainTestKMAC {
         } };
 
     for (int i = 0; i < 2; i++) {
-      buf = new byte [Integer.valueOf(testvec[i][1]).intValue()];
-      ref = new byte [64]; // 256 bits output = 32 bytes
+      buf = new byte[Integer.valueOf(testvec[i][1]).intValue()];
+      ref = new byte[64]; // 256 bits output = 32 bytes
 
       test_readhex(buf, testvec[i][0].toCharArray(), Integer.valueOf(testvec[i][1]).intValue()); // input
       test_readhex(ref, testvec[i][4].toCharArray(), 64); // output
 
-      byte[] outval = Sha3.cShake256(
-    	buf, // X
-        8*ref.length, // L
-        testvec[i][2], // N
-        testvec[i][3]); // S
-      
+      byte[] outval = Sha3.cShake256(buf, // X
+          8 * ref.length, // L
+          testvec[i][2], // N
+          testvec[i][3]); // S
+
       if (!Arrays.equals(ref, outval)) {
-        System.out.println(
-            "[" + i + "] cSHAKE256, len " + (i == 1 ? 1600 : 32) + " test FAILED.\n");
+        System.out.println("[" + i + "] cSHAKE256, len " + (i == 1 ? 1600 : 32) + " test FAILED.\n");
         fails++;
       }
     }
-    
+
     return fails;
   }
 
-  // Test KMACXOF256(K, X, L, S)
+  /**
+   * Test method for KMACXOF256(K, X, L, S)
+   * 
+   * @return zero on success, nonzero + stderr messages on failure
+   */
   public static int test_kmacxof256() {
     // Test vectors from
     // https://csrc.nist.gov/CSRC/media/Projects/Cryptographic-Standards-and-Guidelines/documents/examples/KMACXOF_samples.pdf
     int fails = 0;
-    final String testvec[][] = { 
-      { // Test sample #4
+    final String testvec[][] = { { // Test sample #4
         "404142434445464748494A4B4C4D4E4F505152535455565758595A5B5C5D5E5F", // K - Key
         "00010203", // X - Data
         "4", // L - Length, 32 bits = 4 bytes (hard-coded)
         "My Tagged Application", // S - Character string
         "1755133F1534752AAD0748F2C706FB5C784512CAB835CD15676B16C0C6647FA96FAA7AF634A0BF8FF6DF39374FA00FAD9A39E322A7C92065A64EB1FB0801EB2B" // Outval
-      }, 
-      { // Test sample #5
-        "404142434445464748494A4B4C4D4E4F505152535455565758595A5B5C5D5E5F", // K - Key
-        "000102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F"
-        + "202122232425262728292A2B2C2D2E2F303132333435363738393A3B3C3D3E"
-        + "3F404142434445464748494A4B4C4D4E4F505152535455565758595A5B5C5D"
-        + "5E5F606162636465666768696A6B6C6D6E6F707172737475767778797A7B7C"
-        + "7D7E7F808182838485868788898A8B8C8D8E8F909192939495969798999A9B"
-        + "9C9D9E9FA0A1A2A3A4A5A6A7A8A9AAABACADAEAFB0B1B2B3B4B5B6B7B8B9BABBBCBDBEBFC0C1C2C3C4C5C6C7", // X - Data
-        "200", // L - Length, 1600 bits = 200 bytes (hard-coded)
-        "", // S - Character string, null char
-        "FF7B171F1E8A2B24683EED37830EE797538BA8DC563F6DA1E667391A75EDC02CA633079F81CE12A25F45615EC89972031D18337331D24CEB8F8CA8E6A19FD98B" // Outval
+        }, { // Test sample #5
+            "404142434445464748494A4B4C4D4E4F505152535455565758595A5B5C5D5E5F", // K - Key
+            "000102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F"
+                + "202122232425262728292A2B2C2D2E2F303132333435363738393A3B3C3D3E"
+                + "3F404142434445464748494A4B4C4D4E4F505152535455565758595A5B5C5D"
+                + "5E5F606162636465666768696A6B6C6D6E6F707172737475767778797A7B7C"
+                + "7D7E7F808182838485868788898A8B8C8D8E8F909192939495969798999A9B"
+                + "9C9D9E9FA0A1A2A3A4A5A6A7A8A9AAABACADAEAFB0B1B2B3B4B5B6B7B8B9BABBBCBDBEBFC0C1C2C3C4C5C6C7", // X -
+                                                                                                              // Data
+            "200", // L - Length, 1600 bits = 200 bytes (hard-coded)
+            "", // S - Character string, null char
+            "FF7B171F1E8A2B24683EED37830EE797538BA8DC563F6DA1E667391A75EDC02CA633079F81CE12A25F45615EC89972031D18337331D24CEB8F8CA8E6A19FD98B" // Outval
 
-      }, 
-      { // Test sample #4
-        "404142434445464748494A4B4C4D4E4F505152535455565758595A5B5C5D5E5F", // K - Key
-        "000102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F"
-        + "202122232425262728292A2B2C2D2E2F303132333435363738393A3B3C3D3E"
-        + "3F404142434445464748494A4B4C4D4E4F505152535455565758595A5B5C5D"
-        + "5E5F606162636465666768696A6B6C6D6E6F707172737475767778797A7B7C"
-        + "7D7E7F808182838485868788898A8B8C8D8E8F909192939495969798999A9B"
-        + "9C9D9E9FA0A1A2A3A4A5A6A7A8A9AAABACADAEAFB0B1B2B3B4B5B6B7B8B9BABBBCBDBEBFC0C1C2C3C4C5C6C7", // X - Data
-        "200", // L - Length, 1600 bits = 200 bytes (hard-coded)
-        "My Tagged Application", // S - Character string
-        "D5BE731C954ED7732846BB59DBE3A8E30F83E77A4BFF4459F2F1C2B4ECEBB8CE67BA01C62E8AB8578D2D499BD1BB276768781190020A306A97DE281DCC30305D" // Outval
-      }, 
-    };
+        }, { // Test sample #4
+            "404142434445464748494A4B4C4D4E4F505152535455565758595A5B5C5D5E5F", // K - Key
+            "000102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F"
+                + "202122232425262728292A2B2C2D2E2F303132333435363738393A3B3C3D3E"
+                + "3F404142434445464748494A4B4C4D4E4F505152535455565758595A5B5C5D"
+                + "5E5F606162636465666768696A6B6C6D6E6F707172737475767778797A7B7C"
+                + "7D7E7F808182838485868788898A8B8C8D8E8F909192939495969798999A9B"
+                + "9C9D9E9FA0A1A2A3A4A5A6A7A8A9AAABACADAEAFB0B1B2B3B4B5B6B7B8B9BABBBCBDBEBFC0C1C2C3C4C5C6C7", // X -
+                                                                                                              // Data
+            "200", // L - Length, 1600 bits = 200 bytes (hard-coded)
+            "My Tagged Application", // S - Character string
+            "D5BE731C954ED7732846BB59DBE3A8E30F83E77A4BFF4459F2F1C2B4ECEBB8CE67BA01C62E8AB8578D2D499BD1BB276768781190020A306A97DE281DCC30305D" // Outval
+        }, };
 
     for (int i = 0; i < 3; i++) {
       buf = new byte[Integer.valueOf(testvec[i][2]).intValue()];
@@ -261,11 +287,10 @@ public class MainTestKMAC {
       test_readhex(ref, testvec[i][4].toCharArray(), 64); // output
       test_readhex(key, testvec[i][0].toCharArray(), 32); // key
 
-      byte[] outval = Sha3.KMACXOF256(
-        key, // K
-        buf, // X
-        8*ref.length, // L
-        testvec[i][3]); // S
+      byte[] outval = Sha3.KMACXOF256(key, // K
+          buf, // X
+          8 * ref.length, // L
+          testvec[i][3]); // S
 
       if (!Arrays.equals(ref, outval)) {
         System.out.println("[" + i + "] KMACXOF256, len " + (i >= 1 ? 1600 : 32) + " test FAILED.\n");
