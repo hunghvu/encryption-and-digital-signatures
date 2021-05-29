@@ -95,7 +95,8 @@ public class ECKeyGenPanel extends JPanel {
         genButton.addActionListener(event -> {
             ECKeyPair key = new ECKeyPair(passText.getText());
 			console.setText(key.writePubToFile(outText.getText()));
-			console.append("\n" + key.writePrvToFile(passText2.getText(), outText.getText()));
+			if (optionalFlag)
+				console.append("\n" + key.writePrvToFile(passText2.getText(), outText.getText()));
         });
 
         this.add(Box.createRigidArea(new Dimension(0,10))); // Add space
