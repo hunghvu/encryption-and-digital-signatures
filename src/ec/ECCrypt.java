@@ -1,9 +1,11 @@
 package ec;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.util.Arrays;
 
 import kmac.Sha3;
@@ -76,6 +78,61 @@ public class ECCrypt {
 
 		return new DecryptionData(m, Arrays.equals(t, t_prime));
 	}
+
+	public static String encryptFile(byte[] message, ECPoint V, String outFile) throws IOException {
+
+		outFile = outFile + ".ECcript";
+		byte[] myEncrypt = encrypt(message, V);
+
+		// Read bytes from a file
+		String encryptResult = UtilMethods.writeBytesToFile(myEncrypt,outFile);
+
+		// Convert passphrase to byte array
+		return "Your file has been encrypted to " + outFile;
+	}
+
+
+
+	/**
+	 * Encrypting a byte m under the Schorr/ECDHIES public key V.
+	 * @param message Message byte array.
+	 * @param V Public Key V
+	 * @return The encrypted data.
+	 * @throws IOException
+	 */
+	public static byte[] encrypt(byte[] message, ECPoint V) throws IOException {
+		// k <-- Random(512)
+		SecureRandom rand = new SecureRandom();
+		byte[] key = new byte[64]; // 64 * 8 = 512
+		rand.nextBytes(key);
+		BigInteger k = new BigInteger(key);
+
+		// W -> k*V; Z -> k*G
+		ECPoint W = V.multiply(k);
+
+		//V.multiply(k);
+		ECPoint Z = ECKeyPair.G.multiply(k);
+
+		// (ke || ka) = KMACXOF256(W_x, "", 1024, "P")
+		byte[] ke_ka = Sha3.KMACXOF256(W.getX().toByteArray(), new byte[] {}, 1024, "P");
+		byte[] ke = Arrays.copyOfRange(ke_ka, 0, 64);
+
+		// c = KMACXOF256(ke, "", |m|, "PKE") XOR m
+		byte[] c = UtilMethods.xorBytes(Sha3.KMACXOF256(ke, new byte[] {}, 8 * message.length, "PKE"), message);
+
+		byte[] ka = Arrays.copyOfRange(ke_ka, 64, 128);
+
+		// t = KMACXOF256(ka, m, 512, "PKA")
+		byte[] t = Sha3.KMACXOF256(ka, message, 512, "PKA");
+
+		// symmetric cryptogram: (Z, c, t)
+		ByteArrayOutputStream symCryptogram = new ByteArrayOutputStream();
+		symCryptogram.write(Z.toByteArray());
+		symCryptogram.write(c);
+		symCryptogram.write(t);
+		return symCryptogram.toByteArray();
+	}
+
 
 	// Generating a signature for a byte array m under passphrase pw:
 	private static ECSignature get_signature(byte[] m, String passphrase) {

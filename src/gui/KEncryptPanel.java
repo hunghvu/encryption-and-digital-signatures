@@ -104,7 +104,6 @@ public class KEncryptPanel extends JPanel {
         this.add(encryptButton);
         this.add(Box.createRigidArea(new Dimension(0,10))); // Add space
 
-
     }
 
 }
