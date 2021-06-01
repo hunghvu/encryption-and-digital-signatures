@@ -35,7 +35,7 @@ public class ECEncryptPanel extends JPanel {
     }
 
     /** Input file button. */
-    private static final JButton finButton = new JButton("Select Encrypted File Path");
+    private static final JButton finButton = new JButton("Select File for Encryption");
 
     /** A component to show the input path. */
     private static final JTextField inText = new JTextField(UtilGui.X_AXIS - 10);
@@ -60,15 +60,31 @@ public class ECEncryptPanel extends JPanel {
 
     /** An to type direct text input for decryption. */
     private static final JTextArea inArea = new JTextArea();
+    
+    /** A tick box to show optional private key file feature. */
+    private static final JCheckBox tickBox = new JCheckBox(
+            "Tick this box if you want to generate signsture file as well!");
+
+    /** A boolean value indicating the status of the tick box. */
+    private static boolean optionalFlag = false;
+    
+    /** Passphrase request label. */
+    private static final JLabel passLabel2 = new JLabel(
+        "Put passphrase to generate signature here:");
+
+    /** A field to type passphrase. */
+    private static final JTextField passText2 = new JTextField(UtilGui.X_AXIS - 10);
 
     private static final JPanel inCards = new JPanel(new CardLayout());
     private static final JPanel skCards = new JPanel(new CardLayout());
     private static final JComboBox combo1 = new JComboBox();
-    private final gui.ECEncryptPanel.CardPanel inCard1 = new gui.ECEncryptPanel.CardPanel("1. Encrypt a data file");
-    private final gui.ECEncryptPanel.CardPanel inCard2 = new gui.ECEncryptPanel.CardPanel(
+    private final CardPanel inCard1 = new CardPanel("1. Encrypt a data file");
+    private final CardPanel inCard2 = new CardPanel(
             "2. Encrypt direct text input to the app");
-    private final gui.ECEncryptPanel.CardPanel skCard1 = new gui.ECEncryptPanel.CardPanel(
+    private final CardPanel skCard1 = new CardPanel(
             "1. Get public key via file and its password");
+    
+    
 
     /**
      * Construct new panel for decryption scheme based on KMACXOF256.
@@ -122,6 +138,19 @@ public class ECEncryptPanel extends JPanel {
         outText.setBackground(Color.ORANGE);
         outText.setEditable(false);
         outText.setAlignmentX(JTextField.LEFT_ALIGNMENT);
+        
+        tickBox.addActionListener(event -> {
+            optionalFlag ^= true;
+            passLabel2.setVisible(optionalFlag);
+            passText2.setVisible(optionalFlag);
+        });
+        tickBox.setAlignmentX(JCheckBox.LEFT_ALIGNMENT);
+        
+        passLabel2.setAlignmentX(JLabel.LEFT_ALIGNMENT);
+        passText2.setAlignmentX(JTextField.LEFT_ALIGNMENT);
+        passText2.setMaximumSize(passText2.getPreferredSize());
+        passLabel2.setVisible(optionalFlag);
+        passText2.setVisible(optionalFlag);
 
         decryptButton.addActionListener(event -> {
             String outputPath;
@@ -155,6 +184,9 @@ public class ECEncryptPanel extends JPanel {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            
+            if (optionalFlag)
+                console.append("\n" + ECCrypt.writeSignatureToFile(passText2.getText(), inText.getText() + ECCrypt.encFileFormat));
         });
 
         inArea.setAlignmentX(JTextArea.LEFT_ALIGNMENT);
@@ -186,8 +218,6 @@ public class ECEncryptPanel extends JPanel {
         inCards.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         skCards.add(skCard1, skCard1.toString());
-        // combo2.addItem(skCard2);
-        // skCards.add(skCard2, skCard2.toString());
         skCards.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         combo1.addActionListener(new ActionListener() {
@@ -203,6 +233,12 @@ public class ECEncryptPanel extends JPanel {
         this.add(combo1);
         this.add(inCards);
         this.add(skCards);
+        this.add(Box.createRigidArea(new Dimension(0, 10))); // Add space
+        this.add(tickBox);
+        this.add(Box.createRigidArea(new Dimension(0, 10))); // Add space
+        this.add(passLabel2);
+        this.add(passText2);
+        this.add(Box.createRigidArea(new Dimension(0, 10))); // Add space
         this.add(decryptButton);
 
     }

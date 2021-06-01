@@ -26,7 +26,7 @@ public class ECSignaturePanel extends JPanel {
 
   /** Passphrase request label. */
   private static final JLabel passLabel = new JLabel(
-      "Put passphrase to generate signature here, must be the same as passphrase used to create public key:");
+      "Put passphrase to generate signature here:");
 
   /** A field to type passphrase. */
   private static final JTextField passText = new JTextField(UtilGui.X_AXIS - 10);

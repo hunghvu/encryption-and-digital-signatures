@@ -28,6 +28,11 @@ import util.UtilMethods;
 
 public class ECDecryptPanel extends JPanel {
 
+	/**
+	 * A card panel to encapsulate few components
+	 * @author Phong Hoang Le
+	 *
+	 */
 	class CardPanel extends JPanel {
 		private String name;
 

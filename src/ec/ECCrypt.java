@@ -18,6 +18,8 @@ import util.DecryptionData;
 import util.UtilMethods;
 
 public class ECCrypt {
+	
+	public static final String encFileFormat = ".ECcript"; 
 
 	/**
 	 * Decrypt a file with a passphrase with Schnorr/ECDHIES scheme.
@@ -95,7 +97,7 @@ public class ECCrypt {
 	 */
 	public static String encryptFile(byte[] message, ECPoint V, String outFile) throws IOException {
 
-		outFile = outFile + ".ECcript";
+		outFile = outFile + encFileFormat;
 		byte[] myEncrypt = encrypt(message, V);
 
 		// Read bytes from a file
@@ -176,6 +178,7 @@ public class ECCrypt {
 		// z <- (k - hs) mod r
 		BigInteger hBigInteger = new BigInteger(hBytes);
 		BigInteger zBigInteger = (kBigInteger.subtract(hBigInteger.multiply(sBigInteger))).mod(ECPoint.R);
+		
 		return new ECSignature(hBigInteger, zBigInteger);
 	}
 
@@ -195,9 +198,8 @@ public class ECCrypt {
 		// accept if, and only if, KMACXOF256(U x , m, 512, "T") = h
 		byte[] temp = Sha3.KMACXOF256(u.getX().toByteArray(), m, 512, "T");
 		byte[] tempBytes = new byte[65];
-		System.arraycopy(temp, 0, tempBytes, 1, temp.length); // assuretemph is positive
-		System.out.println(UtilMethods.bytesToHex(tempBytes));
-		System.out.println(UtilMethods.bytesToHex(signature.get_h().toByteArray()));
+		System.arraycopy(temp, 0, tempBytes, 1, temp.length); // assure temp is positive
+
 		return signature.get_h().equals(new BigInteger(tempBytes)) ? true : false;
 	}
 

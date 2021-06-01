@@ -7,9 +7,9 @@ package util;
  *
  */
 public class DecryptionData {
-	// Byte array of the decrypted data
+	/** Byte array of the decrypted data. */
 	private byte[] decData;
-	// A boolean indicating whether decryted data is valid
+	/** A boolean indicating whether decryted data is valid. */
 	private boolean isValid;
 
 	/**
