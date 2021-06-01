@@ -2,6 +2,7 @@
  * This represents an elliptic curve point and its operation
  * @author Phone Le
  * @author Hung Vu
+ * @author Duy Nguyen
  */
 package ec;
 

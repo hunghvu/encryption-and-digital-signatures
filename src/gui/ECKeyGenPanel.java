@@ -84,7 +84,7 @@ public class ECKeyGenPanel extends JPanel {
         passText.setMaximumSize(passText.getPreferredSize());
 
         passText2.setAlignmentX(JTextField.LEFT_ALIGNMENT);
-        passText2.setMaximumSize(passText.getPreferredSize());
+        passText2.setMaximumSize(passText2.getPreferredSize());
 
         passLabel2.setVisible(optionalFlag);
         passText2.setVisible(optionalFlag);
