@@ -1,6 +1,8 @@
 /**
  * This provides method to let elliptic-curve-related UI interact with 
- * back end (elliptic curve - ec), like an interface
+ * back end (elliptic curve - ec), like an interface. A portion of code 
+ * is inspired by Paulo Barreto
+ * 
  * @author Phong Le
  * @author Hung Vu
  * @author Duy Nguyen
