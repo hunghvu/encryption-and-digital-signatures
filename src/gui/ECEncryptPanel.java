@@ -186,7 +186,7 @@ public class ECEncryptPanel extends JPanel {
             }
             
             if (optionalFlag)
-                console.append("\n" + ECCrypt.writeSignatureToFile(passText2.getText(), inText.getText() + ECCrypt.encFileFormat));
+                console.append("\n" + ECCrypt.writeSignatureToFile(passText2.getText(), outputPath + ECCrypt.encFileFormat));
         });
 
         inArea.setAlignmentX(JTextArea.LEFT_ALIGNMENT);
