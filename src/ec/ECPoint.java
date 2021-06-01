@@ -156,7 +156,7 @@ public class ECPoint implements Serializable {
      */
     public static ECPoint toECPoint(byte[] pBytes) {
         if (pBytes.length != BAL)
-            throw new IllegalArgumentException("Provided byte array was not properly formatted");
+            return null;
 
         BigInteger x = new BigInteger(Arrays.copyOfRange(pBytes, 0, BAL / 2));
         BigInteger y = new BigInteger(Arrays.copyOfRange(pBytes, BAL / 2, BAL));
