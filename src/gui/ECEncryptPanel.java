@@ -63,7 +63,7 @@ public class ECEncryptPanel extends JPanel {
     
     /** A tick box to show optional private key file feature. */
     private static final JCheckBox tickBox = new JCheckBox(
-            "Tick this box if you want to generate signsture file as well!");
+            "Tick this box if you want to generate signature file as well!");
 
     /** A boolean value indicating the status of the tick box. */
     private static boolean optionalFlag = false;
